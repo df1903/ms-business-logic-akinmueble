@@ -1,8 +1,8 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
-import {Adviser, AdviserRelations, Request} from '../models';
-import {RequestRepository} from './request.repository';
+import { Getter, inject } from '@loopback/core';
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository } from '@loopback/repository';
+import { MysqlDataSource } from '../datasources';
+import { Adviser, AdviserRelations, Request } from '../models';
+import { RequestRepository } from './request.repository';
 
 export class AdviserRepository extends DefaultCrudRepository<
   Adviser,

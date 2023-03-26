@@ -1,12 +1,12 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
-import {Request, RequestRelations, Adviser, Client, Contract, Guarantor, Property} from '../models';
-import {AdviserRepository} from './adviser.repository';
-import {ClientRepository} from './client.repository';
-import {ContractRepository} from './contract.repository';
-import {GuarantorRepository} from './guarantor.repository';
-import {PropertyRepository} from './property.repository';
+import { Getter, inject } from '@loopback/core';
+import { BelongsToAccessor, DefaultCrudRepository, repository } from '@loopback/repository';
+import { MysqlDataSource } from '../datasources';
+import { Adviser, Client, Contract, Guarantor, Property, Request, RequestRelations } from '../models';
+import { AdviserRepository } from './adviser.repository';
+import { ClientRepository } from './client.repository';
+import { ContractRepository } from './contract.repository';
+import { GuarantorRepository } from './guarantor.repository';
+import { PropertyRepository } from './property.repository';
 
 export class RequestRepository extends DefaultCrudRepository<
   Request,

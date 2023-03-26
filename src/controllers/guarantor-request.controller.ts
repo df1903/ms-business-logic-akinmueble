@@ -1,22 +1,22 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
+    Count,
+    CountSchema,
+    Filter,
+    repository,
+    Where
 } from '@loopback/repository';
 import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
+    del,
+    get,
+    getModelSchemaRef,
+    getWhereSchemaFor,
+    param,
+    patch,
+    post,
+    requestBody
 } from '@loopback/rest';
-import {Guarantor, Request} from '../models';
-import {GuarantorRepository} from '../repositories';
+import { Guarantor, Request } from '../models';
+import { GuarantorRepository } from '../repositories';
 
 export class GuarantorRequestController {
   constructor(

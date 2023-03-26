@@ -1,16 +1,15 @@
 import {
-  repository,
+    repository
 } from '@loopback/repository';
 import {
-  param,
-  get,
-  getModelSchemaRef,
+    get,
+    getModelSchemaRef, param
 } from '@loopback/rest';
 import {
-  Photo,
-  Property,
+    Photo,
+    Property
 } from '../models';
-import {PhotoRepository} from '../repositories';
+import { PhotoRepository } from '../repositories';
 
 export class PhotoPropertyController {
   constructor(

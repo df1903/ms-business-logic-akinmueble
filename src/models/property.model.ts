@@ -3,19 +3,39 @@ import {
   Entity,
   hasMany,
   model,
-  property,
+  property
 } from '@loopback/repository';
 import {City} from './city.model';
 import {Photo} from './photo.model';
 import {Request} from './request.model';
 import {TypeProperty} from './type-property.model';
 
-@model()
+@model({
+  settings:{
+        foreignKeys:[
+          {
+            fk_property_idCity:{
+              name:'fk_property_idCity',
+              entity:'City',
+              entityKey:'id',
+              foreignKey:'cityId'
+            }
+          },{
+            fk_property_idTypeProperty:{
+              name:'fk_property_idTypeProperty',
+              entity:'tTypeProperty',
+              entityKey:'id',
+              foreignKey:'typePropertyId'
+            }
+          }
+        ]
+      }
+  })
 export class Property extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
+    //generated: true,
   })
   id?: number;
 
@@ -62,13 +82,13 @@ export class Property extends Entity {
   video: string;
 
   @belongsTo(() => TypeProperty)
-  typePropertyId: string;
+  typePropertyId: number;
 
   @hasMany(() => Photo)
   photos: Photo[];
 
   @belongsTo(() => City)
-  cityId: string;
+  cityId: number;
 
   @hasMany(() => Request)
   requests: Request[];

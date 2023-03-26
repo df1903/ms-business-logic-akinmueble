@@ -3,7 +3,14 @@
   "extends": "@loopback/build/config/tsconfig.common.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node",
+      "express",
+      "body-parser",
+      "jest",
+      "mocha"
+    ]
   },
   "include": ["src"]
+
 }

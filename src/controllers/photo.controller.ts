@@ -1,24 +1,18 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
+    Count,
+    CountSchema,
+    Filter,
+    FilterExcludingWhere,
+    repository,
+    Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+    del, get,
+    getModelSchemaRef, param, patch, post, put, requestBody,
+    response
 } from '@loopback/rest';
-import {Photo} from '../models';
-import {PhotoRepository} from '../repositories';
+import { Photo } from '../models';
+import { PhotoRepository } from '../repositories';
 
 export class PhotoController {
   constructor(

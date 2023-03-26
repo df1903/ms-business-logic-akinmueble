@@ -1,21 +1,21 @@
-import {Getter, inject} from '@loopback/core';
+import { Getter, inject } from '@loopback/core';
 import {
-  BelongsToAccessor,
-  DefaultCrudRepository,
-  HasManyRepositoryFactory,
-  repository,
+    BelongsToAccessor,
+    DefaultCrudRepository,
+    HasManyRepositoryFactory,
+    repository
 } from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
+import { MysqlDataSource } from '../datasources';
 import {
-  City,
-  Photo,
-  Property,
-  PropertyRelations,
-  TypeProperty, Request} from '../models';
-import {CityRepository} from './city.repository';
-import {PhotoRepository} from './photo.repository';
-import {TypePropertyRepository} from './type-property.repository';
-import {RequestRepository} from './request.repository';
+    City,
+    Photo,
+    Property,
+    PropertyRelations, Request, TypeProperty
+} from '../models';
+import { CityRepository } from './city.repository';
+import { PhotoRepository } from './photo.repository';
+import { RequestRepository } from './request.repository';
+import { TypePropertyRepository } from './type-property.repository';
 
 export class PropertyRepository extends DefaultCrudRepository<
   Property,

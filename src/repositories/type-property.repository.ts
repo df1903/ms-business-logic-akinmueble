@@ -1,8 +1,8 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
-import {TypeProperty, TypePropertyRelations, Property} from '../models';
-import {PropertyRepository} from './property.repository';
+import { Getter, inject } from '@loopback/core';
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository } from '@loopback/repository';
+import { MysqlDataSource } from '../datasources';
+import { Property, TypeProperty, TypePropertyRelations } from '../models';
+import { PropertyRepository } from './property.repository';
 
 export class TypePropertyRepository extends DefaultCrudRepository<
   TypeProperty,

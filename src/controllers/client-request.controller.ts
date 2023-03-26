@@ -1,22 +1,22 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
+    Count,
+    CountSchema,
+    Filter,
+    repository,
+    Where
 } from '@loopback/repository';
 import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
+    del,
+    get,
+    getModelSchemaRef,
+    getWhereSchemaFor,
+    param,
+    patch,
+    post,
+    requestBody
 } from '@loopback/rest';
-import {Client, Request} from '../models';
-import {ClientRepository} from '../repositories';
+import { Client, Request } from '../models';
+import { ClientRepository } from '../repositories';
 
 export class ClientRequestController {
   constructor(

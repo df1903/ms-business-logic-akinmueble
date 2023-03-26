@@ -1,16 +1,14 @@
 import {
-  repository,
+    repository
 } from '@loopback/repository';
 import {
-  param,
-  get,
-  getModelSchemaRef,
+    get,
+    getModelSchemaRef, param
 } from '@loopback/rest';
 import {
-  Property,
-  City,
+    City, Property
 } from '../models';
-import {PropertyRepository} from '../repositories';
+import { PropertyRepository } from '../repositories';
 
 export class PropertyCityController {
   constructor(

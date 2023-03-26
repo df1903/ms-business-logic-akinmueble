@@ -1,24 +1,18 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
+    Count,
+    CountSchema,
+    Filter,
+    FilterExcludingWhere,
+    repository,
+    Where
 } from '@loopback/repository';
 import {
-  post,
-  param,
-  get,
-  getModelSchemaRef,
-  patch,
-  put,
-  del,
-  requestBody,
-  response,
+    del, get,
+    getModelSchemaRef, param, patch, post, put, requestBody,
+    response
 } from '@loopback/rest';
-import {Client} from '../models';
-import {ClientRepository} from '../repositories';
+import { Client } from '../models';
+import { ClientRepository } from '../repositories';
 
 export class ClientController {
   constructor(

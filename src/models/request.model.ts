@@ -5,12 +5,53 @@ import {Contract} from './contract.model';
 import {Guarantor} from './guarantor.model';
 import {Property} from './property.model';
 
-@model()
+@model({
+  settings:{
+        foreignKeys:[
+          {
+            fk_request_idGuarantor:{
+              name:'fk_request_idGuarantor',
+              entity:'Guarantor',
+              entityKey:'id',
+              foreignKey:'guarantorId'
+            }
+          },{
+            fk_request_idClient:{
+              name:'fk_request_idClient',
+              entity:'Client',
+              entityKey:'id',
+              foreignKey:'clientId'
+            }
+          },{
+            fk_request_idAdviser:{
+              name:'fk_request_idAdviser',
+              entity:'Adviser',
+              entityKey:'id',
+              foreignKey:'adviserId'
+            }
+          },{
+            fk_request_idProperty:{
+              name:'fk_request_idProperty',
+              entity:'Property',
+              entityKey:'id',
+              foreignKey:'propertyId'
+            }
+          },{
+            fk_request_idContract:{
+              name:'fk_request_idContract',
+              entity:'Contract',
+              entityKey:'id',
+              foreignKey:'contractId'
+            }
+          }
+        ]
+      }
+  })
 export class Request extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
+    //generated: true,
   })
   id?: number;
 
@@ -57,19 +98,19 @@ export class Request extends Entity {
   comment: string;
 
   @belongsTo(() => Adviser)
-  adviserId: string;
+  adviserId: number;
 
   @belongsTo(() => Client)
-  clientId: string;
+  clientId: number;
 
   @belongsTo(() => Contract)
-  contractId: string;
+  contractId: number;
 
   @belongsTo(() => Guarantor)
-  guarantorId: string;
+  guarantorId: number;
 
   @belongsTo(() => Property)
-  propertyId: string;
+  propertyId: number;
 
   constructor(data?: Partial<Request>) {
     super(data);

@@ -3,12 +3,23 @@ import {
   Entity,
   hasMany,
   model,
-  property,
+  property
 } from '@loopback/repository';
 import {Department} from './department.model';
 import {Property} from './property.model';
 
-@model()
+@model(/*{
+  settings:{
+    foreignKeys:{
+      fk_city_idDepartment:{
+        name:" fk_city_idDepartment",
+        entity:"Department",
+        entityKey:"id",
+        foreignKey:"departmentId"
+      }
+    }
+  }
+}*/)
 export class City extends Entity {
   @property({
     type: 'number',
@@ -23,8 +34,9 @@ export class City extends Entity {
   })
   name: string;
 
+
   @belongsTo(() => Department)
-  departmentId: string;
+  departmentId: number;
 
   @hasMany(() => Property)
   properties: Property[];

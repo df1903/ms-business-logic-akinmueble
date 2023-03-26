@@ -1,12 +1,25 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Property} from './property.model';
 
-@model()
+@model(
+  {
+    settings:{
+      foreignKey:{
+        fk_photo_idProperty:{
+          name:'fk_photo_idProperty',
+          entity:'Property',
+          entityKey:'id',
+          foreignKey:'propertyId'
+        }
+      }
+    }
+  }
+)
 export class Photo extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
+    //generated: true,
   })
   id?: number;
 
@@ -17,7 +30,7 @@ export class Photo extends Entity {
   route: string;
 
   @belongsTo(() => Property)
-  propertyId: string;
+  propertyId: number;
 
   constructor(data?: Partial<Photo>) {
     super(data);

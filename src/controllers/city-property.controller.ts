@@ -1,22 +1,22 @@
 import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
+    Count,
+    CountSchema,
+    Filter,
+    repository,
+    Where
 } from '@loopback/repository';
 import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
+    del,
+    get,
+    getModelSchemaRef,
+    getWhereSchemaFor,
+    param,
+    patch,
+    post,
+    requestBody
 } from '@loopback/rest';
-import {City, Property} from '../models';
-import {CityRepository} from '../repositories';
+import { City, Property } from '../models';
+import { CityRepository } from '../repositories';
 
 export class CityPropertyController {
   constructor(

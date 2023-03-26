@@ -1,8 +1,8 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyRepositoryFactory} from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
-import {Department, DepartmentRelations, City} from '../models';
-import {CityRepository} from './city.repository';
+import { Getter, inject } from '@loopback/core';
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository } from '@loopback/repository';
+import { MysqlDataSource } from '../datasources';
+import { City, Department, DepartmentRelations } from '../models';
+import { CityRepository } from './city.repository';
 
 export class DepartmentRepository extends DefaultCrudRepository<
   Department,

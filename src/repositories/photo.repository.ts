@@ -1,8 +1,8 @@
-import {inject, Getter} from '@loopback/core';
-import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
-import {MysqlDataSource} from '../datasources';
-import {Photo, PhotoRelations, Property} from '../models';
-import {PropertyRepository} from './property.repository';
+import { Getter, inject } from '@loopback/core';
+import { BelongsToAccessor, DefaultCrudRepository, repository } from '@loopback/repository';
+import { MysqlDataSource } from '../datasources';
+import { Photo, PhotoRelations, Property } from '../models';
+import { PropertyRepository } from './property.repository';
 
 export class PhotoRepository extends DefaultCrudRepository<
   Photo,
