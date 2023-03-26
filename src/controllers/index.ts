@@ -27,3 +27,4 @@ export * from './request-property.controller';
 export * from './request.controller';
 export * from './type-property-property.controller';
 export * from './type-property.controller';
+export * from './file-manager.controller';
