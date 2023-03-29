@@ -5,10 +5,10 @@ const config = {
   name: 'mysql',
   connector: 'mysql',
   url: '',
-  host: 'localhost',
+  host: 'akinmueble.cn0rrseequaz.us-east-2.rds.amazonaws.com',
   port: 3306,
-  user: 'root',
-  password: '12345678',
+  user: 'admin',
+  password: 'vFI38xXA6KRwctXK',
   database: 'akinmuebledb'
 };
 // Observe application's life cycle to disconnect the datasource when
