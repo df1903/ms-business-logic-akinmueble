@@ -11,26 +11,23 @@ import {Request} from './request.model';
 import {TypeProperty} from './type-property.model';
 
 @model({
-  settings:{
-        foreignKeys:[
-          {
-            fk_property_idCity:{
-              name:'fk_property_idCity',
-              entity:'City',
-              entityKey:'id',
-              foreignKey:'cityId'
-            }
-          },{
-            fk_property_idTypeProperty:{
-              name:'fk_property_idTypeProperty',
-              entity:'tTypeProperty',
-              entityKey:'id',
-              foreignKey:'typePropertyId'
-            }
-          }
-        ]
-      }
-  })
+  settings: {
+    foreignKeys: {
+      fk_property_cityId: {
+        name: "fk_property_cityId",
+        entity: "City",
+        entityKey: "id",
+        foreignKey: "cityId"
+      },
+      fk_property_typePropertyId: {
+        name: "fk_property_typePropertyId",
+        entity: "TypeProperty",
+        entityKey: "id",
+        foreignKey: "typePropertyId"
+      },
+    }
+  }
+})
 export class Property extends Entity {
   @property({
     type: 'number',
