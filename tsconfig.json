@@ -9,7 +9,8 @@
       "body-parser",
       "jest",
       "mocha"
-    ]
+    ],
+    "experimentalDecorators": true
   },
   "include": ["src"]
 

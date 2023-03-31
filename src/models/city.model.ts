@@ -9,13 +9,13 @@ import {Department} from './department.model';
 import {Property} from './property.model';
 
 @model({
-  settings:{
-    foreignKeys:{
-      fk_city_idDepartment:{
-        name:" fk_city_idDepartment",
-        entity:"Department",
-        entityKey:"id",
-        foreignKey:"departmentId"
+  settings: {
+    foreignKeys: {
+      fk_city_departmentId: {
+        name: "fk_city_departmentId",
+        entity: "Department",
+        entityKey: "id",
+        foreignKey: "departmentId"
       }
     }
   }
