@@ -11,17 +11,17 @@ import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
 import {promisify} from 'util';
-import {GeneralSettings} from '../config/settings.general';
+import {GeneralConfig} from '../config/general.config';
 const readdir = promisify(fs.readdir)
 
 export class FileManagerController {
   constructor() {}
 
-  @post('/upload-product-file' ,{
+  @post('/upload-property-file' ,{
     responses :{
       200: {
         content:{
-          'aplication/json': {
+          'application/json': {
             schema: {
               type:'object',
             },
@@ -31,17 +31,17 @@ export class FileManagerController {
       },
     },
   })
-  async UploadProductFile(
+  async UploadPropertyFile(
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @requestBody.file() request: Request,
   ): Promise<object | false> {
-    const filePath = path.join(__dirname,GeneralSettings.productFilesFolder);
+    const filePath = path.join(__dirname,GeneralConfig.propertiesFilesFolder);
     const res = await this.storeFileToPath(
       filePath,
-      GeneralSettings.productfField,
+      GeneralConfig.propertyField,
       request,
       response,
-      GeneralSettings.imageExtensions,
+      GeneralConfig.imagesExtensions,
     );
     if (res){
       const filename = response.req?.file?.filename;
@@ -105,7 +105,7 @@ export class FileManagerController {
             return callback(null, true);
           }
           return callback(
-            new HttpErrors[400]('la extencion del archivo no es admitida para su almacenamiento'),
+            new HttpErrors[400]('This format file is not supported'),
           );
         },
         limits:{},
@@ -120,7 +120,7 @@ export class FileManagerController {
     });
   }
 
-  /** Descarga de Archivos */
+  /** File Download */
 
   @get('/files/{type}',{
     responses:{
@@ -136,7 +136,7 @@ export class FileManagerController {
             },
           },
         },
-        description:'una lista de archivos',
+        description:'A list of files',
       },
     },
   })
@@ -148,7 +148,7 @@ export class FileManagerController {
 
   @get("/GetFiles/{type}/{name}")
   @oas.response.file()
-  async dowloandFileByName(
+  async downloadFileByName(
     @param.path.number('type') type: number,
     @param.path.string('name') fileName: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
@@ -164,17 +164,17 @@ export class FileManagerController {
    * @param type
    */
 
-  private getFilesByType(tipo: number){
+  private getFilesByType(type: number){
     let filePath = '';
-    switch(tipo){
+    switch(type){
       //amusement
       case 1:
-        filePath = path.join(__dirname, GeneralSettings.productFilesFolder);
+        filePath = path.join(__dirname, GeneralConfig.propertiesFilesFolder);
         break;
+      // case 2:
+      //   filePath = path.join(__dirname, GeneralConfig.clientsFilesFolder);
+      //   break;
       case 2:
-        filePath = path.join(__dirname, GeneralSettings.clientFilesFolder);
-        break;
-      case 3:
         break;
     }
     return filePath;
@@ -188,9 +188,7 @@ export class FileManagerController {
   private validateFileName(folder: string, fileName: string){
     const resolved = path.resolve(folder, fileName);
     if(resolved.startsWith(folder)) return resolved;
-    throw new HttpErrors[400](`Estearchivo es invalido: ${fileName}`);
+    throw new HttpErrors[400](`Invalid file name: ${fileName}`);
   }
-
-
 
 }

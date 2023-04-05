@@ -46,7 +46,12 @@ export class Property extends Entity {
     type: 'number',
     required: true,
   })
-  price: number;
+  salePrice: number;
+  @property({
+    type: 'number',
+    required: true,
+  })
+  rentalPrice: number;
 
   @property({
     type: 'string',
