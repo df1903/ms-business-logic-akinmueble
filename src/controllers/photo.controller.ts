@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Photo } from '../models';
-import { PhotoRepository } from '../repositories';
+import {Photo} from '../models';
+import {PhotoRepository} from '../repositories';
 
 export class PhotoController {
   constructor(
@@ -20,7 +20,7 @@ export class PhotoController {
     public photoRepository : PhotoRepository,
   ) {}
 
-  @post('/photos')
+  @post('/photo')
   @response(200, {
     description: 'Photo model instance',
     content: {'application/json': {schema: getModelSchemaRef(Photo)}},
@@ -41,7 +41,7 @@ export class PhotoController {
     return this.photoRepository.create(photo);
   }
 
-  @get('/photos/count')
+  @get('/photo/count')
   @response(200, {
     description: 'Photo model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class PhotoController {
     return this.photoRepository.count(where);
   }
 
-  @get('/photos')
+  @get('/photo')
   @response(200, {
     description: 'Array of Photo model instances',
     content: {
@@ -70,7 +70,7 @@ export class PhotoController {
     return this.photoRepository.find(filter);
   }
 
-  @patch('/photos')
+  @patch('/photo')
   @response(200, {
     description: 'Photo PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class PhotoController {
     return this.photoRepository.updateAll(photo, where);
   }
 
-  @get('/photos/{id}')
+  @get('/photo/{id}')
   @response(200, {
     description: 'Photo model instance',
     content: {
@@ -105,7 +105,7 @@ export class PhotoController {
     return this.photoRepository.findById(id, filter);
   }
 
-  @patch('/photos/{id}')
+  @patch('/photo/{id}')
   @response(204, {
     description: 'Photo PATCH success',
   })
@@ -123,7 +123,7 @@ export class PhotoController {
     await this.photoRepository.updateById(id, photo);
   }
 
-  @put('/photos/{id}')
+  @put('/photo/{id}')
   @response(204, {
     description: 'Photo PUT success',
   })
@@ -134,7 +134,7 @@ export class PhotoController {
     await this.photoRepository.replaceById(id, photo);
   }
 
-  @del('/photos/{id}')
+  @del('/photo/{id}')
   @response(204, {
     description: 'Photo DELETE success',
   })

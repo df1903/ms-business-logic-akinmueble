@@ -20,7 +20,7 @@ export class DepartmentController {
     public departmentRepository : DepartmentRepository,
   ) {}
 
-  @post('/departments')
+  @post('/department')
   @response(200, {
     description: 'Department model instance',
     content: {'application/json': {schema: getModelSchemaRef(Department)}},
@@ -41,7 +41,7 @@ export class DepartmentController {
     return this.departmentRepository.create(department);
   }
 
-  @get('/departments/count')
+  @get('/department/count')
   @response(200, {
     description: 'Department model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class DepartmentController {
     return this.departmentRepository.count(where);
   }
 
-  @get('/departments')
+  @get('/department')
   @response(200, {
     description: 'Array of Department model instances',
     content: {
@@ -70,7 +70,7 @@ export class DepartmentController {
     return this.departmentRepository.find(filter);
   }
 
-  @patch('/departments')
+  @patch('/department')
   @response(200, {
     description: 'Department PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class DepartmentController {
     return this.departmentRepository.updateAll(department, where);
   }
 
-  @get('/departments/{id}')
+  @get('/department/{id}')
   @response(200, {
     description: 'Department model instance',
     content: {
@@ -105,7 +105,7 @@ export class DepartmentController {
     return this.departmentRepository.findById(id, filter);
   }
 
-  @patch('/departments/{id}')
+  @patch('/department/{id}')
   @response(204, {
     description: 'Department PATCH success',
   })
@@ -123,7 +123,7 @@ export class DepartmentController {
     await this.departmentRepository.updateById(id, department);
   }
 
-  @put('/departments/{id}')
+  @put('/department/{id}')
   @response(204, {
     description: 'Department PUT success',
   })
@@ -134,7 +134,7 @@ export class DepartmentController {
     await this.departmentRepository.replaceById(id, department);
   }
 
-  @del('/departments/{id}')
+  @del('/department/{id}')
   @response(204, {
     description: 'Department DELETE success',
   })

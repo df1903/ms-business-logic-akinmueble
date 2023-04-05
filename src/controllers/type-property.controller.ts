@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { TypeProperty } from '../models';
-import { TypePropertyRepository } from '../repositories';
+import {TypeProperty} from '../models';
+import {TypePropertyRepository} from '../repositories';
 
 export class TypePropertyController {
   constructor(
@@ -20,7 +20,7 @@ export class TypePropertyController {
     public typePropertyRepository : TypePropertyRepository,
   ) {}
 
-  @post('/type-properties')
+  @post('/type-property')
   @response(200, {
     description: 'TypeProperty model instance',
     content: {'application/json': {schema: getModelSchemaRef(TypeProperty)}},
@@ -41,7 +41,7 @@ export class TypePropertyController {
     return this.typePropertyRepository.create(typeProperty);
   }
 
-  @get('/type-properties/count')
+  @get('/type-property/count')
   @response(200, {
     description: 'TypeProperty model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class TypePropertyController {
     return this.typePropertyRepository.count(where);
   }
 
-  @get('/type-properties')
+  @get('/type-property')
   @response(200, {
     description: 'Array of TypeProperty model instances',
     content: {
@@ -70,7 +70,7 @@ export class TypePropertyController {
     return this.typePropertyRepository.find(filter);
   }
 
-  @patch('/type-properties')
+  @patch('/type-property')
   @response(200, {
     description: 'TypeProperty PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class TypePropertyController {
     return this.typePropertyRepository.updateAll(typeProperty, where);
   }
 
-  @get('/type-properties/{id}')
+  @get('/type-property/{id}')
   @response(200, {
     description: 'TypeProperty model instance',
     content: {
@@ -105,7 +105,7 @@ export class TypePropertyController {
     return this.typePropertyRepository.findById(id, filter);
   }
 
-  @patch('/type-properties/{id}')
+  @patch('/type-property/{id}')
   @response(204, {
     description: 'TypeProperty PATCH success',
   })
@@ -123,7 +123,7 @@ export class TypePropertyController {
     await this.typePropertyRepository.updateById(id, typeProperty);
   }
 
-  @put('/type-properties/{id}')
+  @put('/type-property/{id}')
   @response(204, {
     description: 'TypeProperty PUT success',
   })
@@ -134,7 +134,7 @@ export class TypePropertyController {
     await this.typePropertyRepository.replaceById(id, typeProperty);
   }
 
-  @del('/type-properties/{id}')
+  @del('/type-property/{id}')
   @response(204, {
     description: 'TypeProperty DELETE success',
   })

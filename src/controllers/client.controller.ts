@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Client } from '../models';
-import { ClientRepository } from '../repositories';
+import {Client} from '../models';
+import {ClientRepository} from '../repositories';
 
 export class ClientController {
   constructor(
@@ -20,7 +20,7 @@ export class ClientController {
     public clientRepository : ClientRepository,
   ) {}
 
-  @post('/clients')
+  @post('/client')
   @response(200, {
     description: 'Client model instance',
     content: {'application/json': {schema: getModelSchemaRef(Client)}},
@@ -41,7 +41,7 @@ export class ClientController {
     return this.clientRepository.create(client);
   }
 
-  @get('/clients/count')
+  @get('/client/count')
   @response(200, {
     description: 'Client model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class ClientController {
     return this.clientRepository.count(where);
   }
 
-  @get('/clients')
+  @get('/client')
   @response(200, {
     description: 'Array of Client model instances',
     content: {
@@ -70,7 +70,7 @@ export class ClientController {
     return this.clientRepository.find(filter);
   }
 
-  @patch('/clients')
+  @patch('/client')
   @response(200, {
     description: 'Client PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class ClientController {
     return this.clientRepository.updateAll(client, where);
   }
 
-  @get('/clients/{id}')
+  @get('/client/{id}')
   @response(200, {
     description: 'Client model instance',
     content: {
@@ -105,7 +105,7 @@ export class ClientController {
     return this.clientRepository.findById(id, filter);
   }
 
-  @patch('/clients/{id}')
+  @patch('/client/{id}')
   @response(204, {
     description: 'Client PATCH success',
   })
@@ -123,7 +123,7 @@ export class ClientController {
     await this.clientRepository.updateById(id, client);
   }
 
-  @put('/clients/{id}')
+  @put('/client/{id}')
   @response(204, {
     description: 'Client PUT success',
   })
@@ -134,7 +134,7 @@ export class ClientController {
     await this.clientRepository.replaceById(id, client);
   }
 
-  @del('/clients/{id}')
+  @del('/client/{id}')
   @response(204, {
     description: 'Client DELETE success',
   })

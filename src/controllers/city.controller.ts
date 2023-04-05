@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { City } from '../models';
-import { CityRepository } from '../repositories';
+import {City} from '../models';
+import {CityRepository} from '../repositories';
 
 export class CityController {
   constructor(
@@ -20,7 +20,7 @@ export class CityController {
     public cityRepository : CityRepository,
   ) {}
 
-  @post('/cities')
+  @post('/city')
   @response(200, {
     description: 'City model instance',
     content: {'application/json': {schema: getModelSchemaRef(City)}},
@@ -41,7 +41,7 @@ export class CityController {
     return this.cityRepository.create(city);
   }
 
-  @get('/cities/count')
+  @get('/city/count')
   @response(200, {
     description: 'City model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class CityController {
     return this.cityRepository.count(where);
   }
 
-  @get('/cities')
+  @get('/city')
   @response(200, {
     description: 'Array of City model instances',
     content: {
@@ -70,7 +70,7 @@ export class CityController {
     return this.cityRepository.find(filter);
   }
 
-  @patch('/cities')
+  @patch('/city')
   @response(200, {
     description: 'City PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class CityController {
     return this.cityRepository.updateAll(city, where);
   }
 
-  @get('/cities/{id}')
+  @get('/city/{id}')
   @response(200, {
     description: 'City model instance',
     content: {
@@ -105,7 +105,7 @@ export class CityController {
     return this.cityRepository.findById(id, filter);
   }
 
-  @patch('/cities/{id}')
+  @patch('/city/{id}')
   @response(204, {
     description: 'City PATCH success',
   })
@@ -123,7 +123,7 @@ export class CityController {
     await this.cityRepository.updateById(id, city);
   }
 
-  @put('/cities/{id}')
+  @put('/city/{id}')
   @response(204, {
     description: 'City PUT success',
   })
@@ -134,7 +134,7 @@ export class CityController {
     await this.cityRepository.replaceById(id, city);
   }
 
-  @del('/cities/{id}')
+  @del('/city/{id}')
   @response(204, {
     description: 'City DELETE success',
   })

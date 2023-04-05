@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Request } from '../models';
-import { RequestRepository } from '../repositories';
+import {Request} from '../models';
+import {RequestRepository} from '../repositories';
 
 export class RequestController {
   constructor(
@@ -20,7 +20,7 @@ export class RequestController {
     public requestRepository : RequestRepository,
   ) {}
 
-  @post('/requests')
+  @post('/request')
   @response(200, {
     description: 'Request model instance',
     content: {'application/json': {schema: getModelSchemaRef(Request)}},
@@ -41,7 +41,7 @@ export class RequestController {
     return this.requestRepository.create(request);
   }
 
-  @get('/requests/count')
+  @get('/request/count')
   @response(200, {
     description: 'Request model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class RequestController {
     return this.requestRepository.count(where);
   }
 
-  @get('/requests')
+  @get('/request')
   @response(200, {
     description: 'Array of Request model instances',
     content: {
@@ -70,7 +70,7 @@ export class RequestController {
     return this.requestRepository.find(filter);
   }
 
-  @patch('/requests')
+  @patch('/request')
   @response(200, {
     description: 'Request PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class RequestController {
     return this.requestRepository.updateAll(request, where);
   }
 
-  @get('/requests/{id}')
+  @get('/request/{id}')
   @response(200, {
     description: 'Request model instance',
     content: {
@@ -105,7 +105,7 @@ export class RequestController {
     return this.requestRepository.findById(id, filter);
   }
 
-  @patch('/requests/{id}')
+  @patch('/request/{id}')
   @response(204, {
     description: 'Request PATCH success',
   })
@@ -123,7 +123,7 @@ export class RequestController {
     await this.requestRepository.updateById(id, request);
   }
 
-  @put('/requests/{id}')
+  @put('/request/{id}')
   @response(204, {
     description: 'Request PUT success',
   })
@@ -134,7 +134,7 @@ export class RequestController {
     await this.requestRepository.replaceById(id, request);
   }
 
-  @del('/requests/{id}')
+  @del('/request/{id}')
   @response(204, {
     description: 'Request DELETE success',
   })

@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Property } from '../models';
-import { PropertyRepository } from '../repositories';
+import {Property} from '../models';
+import {PropertyRepository} from '../repositories';
 
 export class PropertyController {
   constructor(
@@ -20,7 +20,7 @@ export class PropertyController {
     public propertyRepository : PropertyRepository,
   ) {}
 
-  @post('/properties')
+  @post('/property')
   @response(200, {
     description: 'Property model instance',
     content: {'application/json': {schema: getModelSchemaRef(Property)}},
@@ -41,7 +41,7 @@ export class PropertyController {
     return this.propertyRepository.create(property);
   }
 
-  @get('/properties/count')
+  @get('/property/count')
   @response(200, {
     description: 'Property model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class PropertyController {
     return this.propertyRepository.count(where);
   }
 
-  @get('/properties')
+  @get('/property')
   @response(200, {
     description: 'Array of Property model instances',
     content: {
@@ -70,7 +70,7 @@ export class PropertyController {
     return this.propertyRepository.find(filter);
   }
 
-  @patch('/properties')
+  @patch('/property')
   @response(200, {
     description: 'Property PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class PropertyController {
     return this.propertyRepository.updateAll(property, where);
   }
 
-  @get('/properties/{id}')
+  @get('/property/{id}')
   @response(200, {
     description: 'Property model instance',
     content: {
@@ -105,7 +105,7 @@ export class PropertyController {
     return this.propertyRepository.findById(id, filter);
   }
 
-  @patch('/properties/{id}')
+  @patch('/property/{id}')
   @response(204, {
     description: 'Property PATCH success',
   })
@@ -123,7 +123,7 @@ export class PropertyController {
     await this.propertyRepository.updateById(id, property);
   }
 
-  @put('/properties/{id}')
+  @put('/property/{id}')
   @response(204, {
     description: 'Property PUT success',
   })
@@ -134,7 +134,7 @@ export class PropertyController {
     await this.propertyRepository.replaceById(id, property);
   }
 
-  @del('/properties/{id}')
+  @del('/property/{id}')
   @response(204, {
     description: 'Property DELETE success',
   })

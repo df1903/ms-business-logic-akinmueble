@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Contract } from '../models';
-import { ContractRepository } from '../repositories';
+import {Contract} from '../models';
+import {ContractRepository} from '../repositories';
 
 export class ContractController {
   constructor(
@@ -20,7 +20,7 @@ export class ContractController {
     public contractRepository : ContractRepository,
   ) {}
 
-  @post('/contracts')
+  @post('/contract')
   @response(200, {
     description: 'Contract model instance',
     content: {'application/json': {schema: getModelSchemaRef(Contract)}},
@@ -41,7 +41,7 @@ export class ContractController {
     return this.contractRepository.create(contract);
   }
 
-  @get('/contracts/count')
+  @get('/contract/count')
   @response(200, {
     description: 'Contract model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class ContractController {
     return this.contractRepository.count(where);
   }
 
-  @get('/contracts')
+  @get('/contract')
   @response(200, {
     description: 'Array of Contract model instances',
     content: {
@@ -70,7 +70,7 @@ export class ContractController {
     return this.contractRepository.find(filter);
   }
 
-  @patch('/contracts')
+  @patch('/contract')
   @response(200, {
     description: 'Contract PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class ContractController {
     return this.contractRepository.updateAll(contract, where);
   }
 
-  @get('/contracts/{id}')
+  @get('/contract/{id}')
   @response(200, {
     description: 'Contract model instance',
     content: {
@@ -105,7 +105,7 @@ export class ContractController {
     return this.contractRepository.findById(id, filter);
   }
 
-  @patch('/contracts/{id}')
+  @patch('/contract/{id}')
   @response(204, {
     description: 'Contract PATCH success',
   })
@@ -123,7 +123,7 @@ export class ContractController {
     await this.contractRepository.updateById(id, contract);
   }
 
-  @put('/contracts/{id}')
+  @put('/contract/{id}')
   @response(204, {
     description: 'Contract PUT success',
   })
@@ -134,7 +134,7 @@ export class ContractController {
     await this.contractRepository.replaceById(id, contract);
   }
 
-  @del('/contracts/{id}')
+  @del('/contract/{id}')
   @response(204, {
     description: 'Contract DELETE success',
   })

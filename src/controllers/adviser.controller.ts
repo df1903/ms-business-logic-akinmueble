@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Adviser } from '../models';
-import { AdviserRepository } from '../repositories';
+import {Adviser} from '../models';
+import {AdviserRepository} from '../repositories';
 
 export class AdviserController {
   constructor(
@@ -20,7 +20,7 @@ export class AdviserController {
     public adviserRepository : AdviserRepository,
   ) {}
 
-  @post('/advisers')
+  @post('/adviser')
   @response(200, {
     description: 'Adviser model instance',
     content: {'application/json': {schema: getModelSchemaRef(Adviser)}},
@@ -41,7 +41,7 @@ export class AdviserController {
     return this.adviserRepository.create(adviser);
   }
 
-  @get('/advisers/count')
+  @get('/adviser/count')
   @response(200, {
     description: 'Adviser model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class AdviserController {
     return this.adviserRepository.count(where);
   }
 
-  @get('/advisers')
+  @get('/adviser')
   @response(200, {
     description: 'Array of Adviser model instances',
     content: {
@@ -70,7 +70,7 @@ export class AdviserController {
     return this.adviserRepository.find(filter);
   }
 
-  @patch('/advisers')
+  @patch('/adviser')
   @response(200, {
     description: 'Adviser PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class AdviserController {
     return this.adviserRepository.updateAll(adviser, where);
   }
 
-  @get('/advisers/{id}')
+  @get('/adviser/{id}')
   @response(200, {
     description: 'Adviser model instance',
     content: {
@@ -105,7 +105,7 @@ export class AdviserController {
     return this.adviserRepository.findById(id, filter);
   }
 
-  @patch('/advisers/{id}')
+  @patch('/adviser/{id}')
   @response(204, {
     description: 'Adviser PATCH success',
   })
@@ -123,7 +123,7 @@ export class AdviserController {
     await this.adviserRepository.updateById(id, adviser);
   }
 
-  @put('/advisers/{id}')
+  @put('/adviser/{id}')
   @response(204, {
     description: 'Adviser PUT success',
   })
@@ -134,7 +134,7 @@ export class AdviserController {
     await this.adviserRepository.replaceById(id, adviser);
   }
 
-  @del('/advisers/{id}')
+  @del('/adviser/{id}')
   @response(204, {
     description: 'Adviser DELETE success',
   })

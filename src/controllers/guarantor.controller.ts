@@ -1,18 +1,18 @@
 import {
-    Count,
-    CountSchema,
-    Filter,
-    FilterExcludingWhere,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  FilterExcludingWhere,
+  repository,
+  Where
 } from '@loopback/repository';
 import {
-    del, get,
-    getModelSchemaRef, param, patch, post, put, requestBody,
-    response
+  del, get,
+  getModelSchemaRef, param, patch, post, put, requestBody,
+  response
 } from '@loopback/rest';
-import { Guarantor } from '../models';
-import { GuarantorRepository } from '../repositories';
+import {Guarantor} from '../models';
+import {GuarantorRepository} from '../repositories';
 
 export class GuarantorController {
   constructor(
@@ -20,7 +20,7 @@ export class GuarantorController {
     public guarantorRepository : GuarantorRepository,
   ) {}
 
-  @post('/guarantors')
+  @post('/guarantor')
   @response(200, {
     description: 'Guarantor model instance',
     content: {'application/json': {schema: getModelSchemaRef(Guarantor)}},
@@ -41,7 +41,7 @@ export class GuarantorController {
     return this.guarantorRepository.create(guarantor);
   }
 
-  @get('/guarantors/count')
+  @get('/guarantor/count')
   @response(200, {
     description: 'Guarantor model count',
     content: {'application/json': {schema: CountSchema}},
@@ -52,7 +52,7 @@ export class GuarantorController {
     return this.guarantorRepository.count(where);
   }
 
-  @get('/guarantors')
+  @get('/guarantor')
   @response(200, {
     description: 'Array of Guarantor model instances',
     content: {
@@ -70,7 +70,7 @@ export class GuarantorController {
     return this.guarantorRepository.find(filter);
   }
 
-  @patch('/guarantors')
+  @patch('/guarantor')
   @response(200, {
     description: 'Guarantor PATCH success count',
     content: {'application/json': {schema: CountSchema}},
@@ -89,7 +89,7 @@ export class GuarantorController {
     return this.guarantorRepository.updateAll(guarantor, where);
   }
 
-  @get('/guarantors/{id}')
+  @get('/guarantor/{id}')
   @response(200, {
     description: 'Guarantor model instance',
     content: {
@@ -105,7 +105,7 @@ export class GuarantorController {
     return this.guarantorRepository.findById(id, filter);
   }
 
-  @patch('/guarantors/{id}')
+  @patch('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor PATCH success',
   })
@@ -123,7 +123,7 @@ export class GuarantorController {
     await this.guarantorRepository.updateById(id, guarantor);
   }
 
-  @put('/guarantors/{id}')
+  @put('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor PUT success',
   })
@@ -134,7 +134,7 @@ export class GuarantorController {
     await this.guarantorRepository.replaceById(id, guarantor);
   }
 
-  @del('/guarantors/{id}')
+  @del('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor DELETE success',
   })
