@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -11,6 +12,7 @@ import {
   getModelSchemaRef, param, patch, post, put, requestBody,
   response
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Property} from '../models';
 import {PropertyRepository} from '../repositories';
 
@@ -52,6 +54,10 @@ export class PropertyController {
     return this.propertyRepository.count(where);
   }
 
+  @authenticate({
+    strategy: "auth",
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction]
+  })
   @get('/property')
   @response(200, {
     description: 'Array of Property model instances',
