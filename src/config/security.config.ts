@@ -6,5 +6,5 @@ export namespace SecurityConfig {
   export const deleteAction = "delete";
   export const downloadAction = "download";
   export const createAction = "create";
-  // export const securityMicroserviceLink: string = "http//localhost:3000"
+  export const securityMicroserviceLink: string = "http://localhost:3001"
 }
