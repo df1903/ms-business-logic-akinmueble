@@ -10,7 +10,8 @@ import {Photo} from './photo.model';
 import {Request} from './request.model';
 import {TypeProperty} from './type-property.model';
 
-@model({
+@model(
+  {
   settings: {
     foreignKeys: {
       fk_property_cityId: {
@@ -27,12 +28,13 @@ import {TypeProperty} from './type-property.model';
       },
     }
   }
-})
+}
+)
 export class Property extends Entity {
   @property({
     type: 'number',
     id: true,
-    //generated: true,
+    generated: true,
   })
   id?: number;
 
@@ -44,12 +46,10 @@ export class Property extends Entity {
 
   @property({
     type: 'number',
-    required: true,
   })
   salePrice: number;
   @property({
     type: 'number',
-    required: true,
   })
   rentalPrice: number;
 

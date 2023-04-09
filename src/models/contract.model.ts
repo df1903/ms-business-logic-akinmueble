@@ -6,9 +6,15 @@ export class Contract extends Entity {
   @property({
     type: 'number',
     id: true,
-    //generated: true,
+    generated: true,
   })
   id?: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  file: string;
 
   @hasOne(() => Request)
   request: Request;

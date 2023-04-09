@@ -8,7 +8,8 @@ import {
 import {Department} from './department.model';
 import {Property} from './property.model';
 
-@model({
+@model(
+  {
   settings: {
     foreignKeys: {
       fk_city_departmentId: {
@@ -19,7 +20,8 @@ import {Property} from './property.model';
       }
     }
   }
-})
+}
+)
 export class City extends Entity {
   @property({
     type: 'number',

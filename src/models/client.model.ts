@@ -6,7 +6,7 @@ export class Client extends Entity {
   @property({
     type: 'number',
     id: true,
-    //generated: true,
+    generated: true,
   })
   id?: number;
 
@@ -35,7 +35,6 @@ export class Client extends Entity {
 
   @property({
     type: 'string',
-    required: true,
   })
   secondLastname: string;
 

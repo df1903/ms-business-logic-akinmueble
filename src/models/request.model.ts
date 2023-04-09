@@ -5,7 +5,8 @@ import {Contract} from './contract.model';
 import {Guarantor} from './guarantor.model';
 import {Property} from './property.model';
 
-@model({
+@model(
+  {
   settings: {
     foreignKeys: {
       fk_request_adviserId: {
@@ -40,12 +41,13 @@ import {Property} from './property.model';
       },
     }
   }
-})
+}
+)
 export class Request extends Entity {
   @property({
     type: 'number',
     id: true,
-    //generated: true,
+    generated: true,
   })
   id?: number;
 
