@@ -57,6 +57,7 @@
     "@loopback/rest-explorer": "^5.0.8",
     "@loopback/service-proxy": "^5.0.8",
     "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3",
     "loopback-connector-mysql": "^5.4.4",
     "multer": "^1.4.5-lts.1",
     "node-fetch": "^2.6.7",

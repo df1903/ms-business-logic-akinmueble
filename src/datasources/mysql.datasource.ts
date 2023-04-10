@@ -1,15 +1,16 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+import {SecurityConfig} from '../config/security.config';
 
 const config = {
   name: 'mysql',
   connector: 'mysql',
   url: '',
-  host: 'akinmueble.cn0rrseequaz.us-east-2.rds.amazonaws.com',
+  host: SecurityConfig.hostMysql,
   port: 3306,
   user: 'admin',
-  password: 'vFI38xXA6KRwctXK',
-  database: 'akinmuebledb'
+  password: SecurityConfig.passwordMysql,
+  database: SecurityConfig.nameDatabase
 
 };
 // Observe application's life cycle to disconnect the datasource when

@@ -6,5 +6,9 @@ export namespace SecurityConfig {
   export const deleteAction = "delete";
   export const downloadAction = "download";
   export const createAction = "create";
-  export const securityMicroserviceLink: string = "http://localhost:3001"
+  export const securityMicroserviceLink: string = "http://localhost:3001";
+  export const hostMysql = process.env.HOST_STRING_MYSQL;
+  export const passwordMysql = process.env.PASSWORD_MYSQL;
+  export const nameDatabase = process.env.NAME_DATABASE
+
 }
