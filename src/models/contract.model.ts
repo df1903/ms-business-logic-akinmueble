@@ -14,7 +14,7 @@ export class Contract extends Entity {
     type: 'string',
     required: true,
   })
-  file: string;
+  route: string;
 
   @hasOne(() => Request)
   request: Request;

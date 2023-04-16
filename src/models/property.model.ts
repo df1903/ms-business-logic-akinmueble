@@ -40,12 +40,13 @@ export class Property extends Entity {
     type: 'string',
     required: true,
   })
-  direction: string;
+  address: string;
 
   @property({
     type: 'number',
   })
   salePrice: number;
+
   @property({
     type: 'number',
   })
@@ -56,12 +57,6 @@ export class Property extends Entity {
     required: true,
   })
   description: string;
-
-  @property({
-    type: 'number',
-    required: true,
-  })
-  participationPercentage: number;
 
   @property({
     type: 'boolean',

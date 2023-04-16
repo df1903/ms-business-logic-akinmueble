@@ -16,6 +16,24 @@ export class PropertyType extends Entity {
   })
   name: string;
 
+  @property({
+    type: 'number',
+    required: true,
+  })
+  rentParticipationPercentage: number;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  sellParticipationPercentage: number;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  description: string;
+
   @hasMany(() => Property)
   properties: Property[];
 

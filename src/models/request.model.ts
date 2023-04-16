@@ -4,6 +4,8 @@ import {Client} from './client.model';
 import {Contract} from './contract.model';
 import {Guarantor} from './guarantor.model';
 import {Property} from './property.model';
+import {RequestStatus} from './request-status.model';
+import {RequestType} from './request-type.model';
 
 @model({
   settings: {
@@ -38,6 +40,18 @@ import {Property} from './property.model';
         entityKey: 'id',
         foreignKey: 'guarantorId',
       },
+      fk_request_requestTypeId: {
+        name: 'fk_request_requestTypeId',
+        entity: 'RequestType',
+        entityKey: 'id',
+        foreignKey: 'requestTypeId',
+      },
+      fk_request_requestStatusId: {
+        name: 'fk_request_requestStatusId',
+        entity: 'RequestStatus',
+        entityKey: 'id',
+        foreignKey: 'requestStatusId',
+      },
     },
   },
 })
@@ -56,38 +70,7 @@ export class Request extends Entity {
   date: string;
 
   @property({
-    type: 'boolean',
-    required: true,
-  })
-  sent: boolean;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  underReview: boolean;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  accepted: boolean;
-
-  @property({
-    type: 'boolean',
-    required: true,
-  })
-  rejected: boolean;
-
-  @property({
     type: 'string',
-    required: true,
-  })
-  notification: string;
-
-  @property({
-    type: 'string',
-    required: true,
   })
   comment: string;
 
@@ -105,6 +88,12 @@ export class Request extends Entity {
 
   @belongsTo(() => Property)
   propertyId: number;
+
+  @belongsTo(() => RequestType)
+  requestTypeId: number;
+
+  @belongsTo(() => RequestStatus)
+  requestStatusId: number;
 
   constructor(data?: Partial<Request>) {
     super(data);
