@@ -2,7 +2,7 @@ import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Property} from './property.model';
 
 @model()
-export class TypeProperty extends Entity {
+export class PropertyType extends Entity {
   @property({
     type: 'number',
     id: true,
@@ -19,13 +19,13 @@ export class TypeProperty extends Entity {
   @hasMany(() => Property)
   properties: Property[];
 
-  constructor(data?: Partial<TypeProperty>) {
+  constructor(data?: Partial<PropertyType>) {
     super(data);
   }
 }
 
-export interface TypePropertyRelations {
+export interface PropertyTypeRelations {
   // describe navigational properties here
 }
 
-export type TypePropertyWithRelations = TypeProperty & TypePropertyRelations;
+export type PropertyTypeWithRelations = PropertyType & PropertyTypeRelations;

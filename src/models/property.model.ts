@@ -3,33 +3,31 @@ import {
   Entity,
   hasMany,
   model,
-  property
+  property,
 } from '@loopback/repository';
 import {City} from './city.model';
 import {Photo} from './photo.model';
+import {PropertyType} from './property-type.model';
 import {Request} from './request.model';
-import {TypeProperty} from './type-property.model';
 
-@model(
-  {
+@model({
   settings: {
     foreignKeys: {
       fk_property_cityId: {
-        name: "fk_property_cityId",
-        entity: "City",
-        entityKey: "id",
-        foreignKey: "cityId"
+        name: 'fk_property_cityId',
+        entity: 'City',
+        entityKey: 'id',
+        foreignKey: 'cityId',
       },
-      fk_property_typePropertyId: {
-        name: "fk_property_typePropertyId",
-        entity: "TypeProperty",
-        entityKey: "id",
-        foreignKey: "typePropertyId"
+      fk_property_propertyTypeId: {
+        name: 'fk_property_propertyTypeId',
+        entity: 'PropertyType',
+        entityKey: 'id',
+        foreignKey: 'propertyTypeId',
       },
-    }
-  }
-}
-)
+    },
+  },
+})
 export class Property extends Entity {
   @property({
     type: 'number',
@@ -83,8 +81,8 @@ export class Property extends Entity {
   })
   video: string;
 
-  @belongsTo(() => TypeProperty)
-  typePropertyId: number;
+  @belongsTo(() => PropertyType)
+  propertyTypeId: number;
 
   @hasMany(() => Photo)
   photos: Photo[];

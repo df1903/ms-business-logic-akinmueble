@@ -1,37 +1,111 @@
 import {
-    repository
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    get,
-    getModelSchemaRef, param
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import {
-    Property,
-    TypeProperty
-} from '../models';
-import { PropertyRepository } from '../repositories';
+import {Property, PropertyType} from '../models';
+import {PropertyTypeRepository} from '../repositories';
 
 export class PropertyTypePropertyController {
   constructor(
-    @repository(PropertyRepository)
-    public propertyRepository: PropertyRepository,
-  ) { }
+    @repository(PropertyTypeRepository)
+    protected propertyTypeRepository: PropertyTypeRepository,
+  ) {}
 
-  @get('/properties/{id}/type-property', {
+  @get('/property-types/{id}/properties', {
     responses: {
       '200': {
-        description: 'TypeProperty belonging to Property',
+        description: 'Array of PropertyType has many Property',
         content: {
           'application/json': {
-            schema: getModelSchemaRef(TypeProperty),
+            schema: {type: 'array', items: getModelSchemaRef(Property)},
           },
         },
       },
     },
   })
-  async getTypeProperty(
-    @param.path.string('id') id: typeof Property.prototype.id,
-  ): Promise<TypeProperty> {
-    return this.propertyRepository.typeProperty(id);
+  async find(
+    @param.path.string('id') id: number,
+    @param.query.object('filter') filter?: Filter<Property>,
+  ): Promise<Property[]> {
+    return this.propertyTypeRepository.properties(id).find(filter);
+  }
+
+  @post('/property-types/{id}/properties', {
+    responses: {
+      '200': {
+        description: 'PropertyType model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Property)}},
+      },
+    },
+  })
+  async create(
+    @param.path.string('id') id: typeof PropertyType.prototype.id,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Property, {
+            title: 'NewPropertyInPropertyType',
+            exclude: ['id'],
+            optional: ['propertyTypeId'],
+          }),
+        },
+      },
+    })
+    property: Omit<Property, 'id'>,
+  ): Promise<Property> {
+    return this.propertyTypeRepository.properties(id).create(property);
+  }
+
+  @patch('/property-types/{id}/properties', {
+    responses: {
+      '200': {
+        description: 'PropertyType.Property PATCH success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  async patch(
+    @param.path.string('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Property, {partial: true}),
+        },
+      },
+    })
+    property: Partial<Property>,
+    @param.query.object('where', getWhereSchemaFor(Property))
+    where?: Where<Property>,
+  ): Promise<Count> {
+    return this.propertyTypeRepository.properties(id).patch(property, where);
+  }
+
+  @del('/property-types/{id}/properties', {
+    responses: {
+      '200': {
+        description: 'PropertyType.Property DELETE success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  async delete(
+    @param.path.string('id') id: number,
+    @param.query.object('where', getWhereSchemaFor(Property))
+    where?: Where<Property>,
+  ): Promise<Count> {
+    return this.propertyTypeRepository.properties(id).delete(where);
   }
 }

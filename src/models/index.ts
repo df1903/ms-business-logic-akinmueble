@@ -8,6 +8,6 @@ export * from './department.model';
 export * from './general-system-variables.model';
 export * from './guarantor.model';
 export * from './photo.model';
+export * from './property-type.model';
 export * from './property.model';
 export * from './request.model';
-export * from './type-property.model';

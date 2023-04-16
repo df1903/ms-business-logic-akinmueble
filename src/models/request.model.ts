@@ -5,44 +5,42 @@ import {Contract} from './contract.model';
 import {Guarantor} from './guarantor.model';
 import {Property} from './property.model';
 
-@model(
-  {
+@model({
   settings: {
     foreignKeys: {
       fk_request_adviserId: {
-        name: "fk_request_adviserId",
-        entity: "Adviser",
-        entityKey: "id",
-        foreignKey: "adviserId"
+        name: 'fk_request_adviserId',
+        entity: 'Adviser',
+        entityKey: 'id',
+        foreignKey: 'adviserId',
       },
       fk_request_clientId: {
-        name: "fk_request_clientId",
-        entity: "Client",
-        entityKey: "id",
-        foreignKey: "clientId"
+        name: 'fk_request_clientId',
+        entity: 'Client',
+        entityKey: 'id',
+        foreignKey: 'clientId',
       },
       fk_request_contractId: {
-        name: "fk_request_contractId",
-        entity: "Contract",
-        entityKey: "id",
-        foreignKey: "contractId"
+        name: 'fk_request_contractId',
+        entity: 'Contract',
+        entityKey: 'id',
+        foreignKey: 'contractId',
       },
       fk_request_propertyId: {
-        name: "fk_request_propertyId",
-        entity: "Property",
-        entityKey: "id",
-        foreignKey: "propertyId"
+        name: 'fk_request_propertyId',
+        entity: 'Property',
+        entityKey: 'id',
+        foreignKey: 'propertyId',
       },
       fk_request_guarantorId: {
-        name: "fk_request_guarantorId",
-        entity: "Guarantor",
-        entityKey: "id",
-        foreignKey: "guarantorId"
+        name: 'fk_request_guarantorId',
+        entity: 'Guarantor',
+        entityKey: 'id',
+        foreignKey: 'guarantorId',
       },
-    }
-  }
-}
-)
+    },
+  },
+})
 export class Request extends Entity {
   @property({
     type: 'number',

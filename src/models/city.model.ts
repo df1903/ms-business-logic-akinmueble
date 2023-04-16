@@ -3,25 +3,23 @@ import {
   Entity,
   hasMany,
   model,
-  property
+  property,
 } from '@loopback/repository';
 import {Department} from './department.model';
 import {Property} from './property.model';
 
-@model(
-  {
+@model({
   settings: {
     foreignKeys: {
       fk_city_departmentId: {
-        name: "fk_city_departmentId",
-        entity: "Department",
-        entityKey: "id",
-        foreignKey: "departmentId"
-      }
-    }
-  }
-}
-)
+        name: 'fk_city_departmentId',
+        entity: 'Department',
+        entityKey: 'id',
+        foreignKey: 'departmentId',
+      },
+    },
+  },
+})
 export class City extends Entity {
   @property({
     type: 'number',
@@ -35,7 +33,6 @@ export class City extends Entity {
     required: true,
   })
   name: string;
-
 
   @belongsTo(() => Department)
   departmentId: number;
