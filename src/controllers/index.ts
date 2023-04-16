@@ -28,3 +28,4 @@ export * from './request.controller';
 export * from './type-property-property.controller';
 export * from './type-property.controller';
 export * from './file-manager.controller';
+export * from './contact.controller';

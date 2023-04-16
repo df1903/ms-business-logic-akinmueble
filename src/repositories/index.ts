@@ -9,3 +9,4 @@ export * from './photo.repository';
 export * from './property.repository';
 export * from './request.repository';
 export * from './type-property.repository';
+export * from './general-system-variables.repository';
