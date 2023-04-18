@@ -5,12 +5,18 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
 import {SecurityConfig} from '../config/security.config';
 import {Property} from '../models';
@@ -19,9 +25,13 @@ import {PropertyRepository} from '../repositories';
 export class PropertyController {
   constructor(
     @repository(PropertyRepository)
-    public propertyRepository : PropertyRepository,
+    public propertyRepository: PropertyRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.createAction],
+  })
   @post('/property')
   @response(200, {
     description: 'Property model instance',
@@ -43,20 +53,22 @@ export class PropertyController {
     return this.propertyRepository.create(property);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction],
+  })
   @get('/property/count')
   @response(200, {
     description: 'Property model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Property) where?: Where<Property>,
-  ): Promise<Count> {
+  async count(@param.where(Property) where?: Where<Property>): Promise<Count> {
     return this.propertyRepository.count(where);
   }
 
   @authenticate({
-    strategy: "auth",
-    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction]
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction],
   })
   @get('/property')
   @response(200, {
@@ -76,6 +88,10 @@ export class PropertyController {
     return this.propertyRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.editAction],
+  })
   @patch('/property')
   @response(200, {
     description: 'Property PATCH success count',
@@ -95,6 +111,10 @@ export class PropertyController {
     return this.propertyRepository.updateAll(property, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction],
+  })
   @get('/property/{id}')
   @response(200, {
     description: 'Property model instance',
@@ -106,11 +126,16 @@ export class PropertyController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Property, {exclude: 'where'}) filter?: FilterExcludingWhere<Property>
+    @param.filter(Property, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Property>,
   ): Promise<Property> {
     return this.propertyRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.editAction],
+  })
   @patch('/property/{id}')
   @response(204, {
     description: 'Property PATCH success',
@@ -129,6 +154,10 @@ export class PropertyController {
     await this.propertyRepository.updateById(id, property);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.createAction],
+  })
   @put('/property/{id}')
   @response(204, {
     description: 'Property PUT success',
@@ -140,6 +169,10 @@ export class PropertyController {
     await this.propertyRepository.replaceById(id, property);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.deleteAction],
+  })
   @del('/property/{id}')
   @response(204, {
     description: 'Property DELETE success',
