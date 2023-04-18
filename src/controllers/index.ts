@@ -35,3 +35,4 @@ export * from './request-type-request.controller';
 export * from './request-status-request.controller';
 export * from './request-type.controller';
 export * from './request-status.controller';
+export * from './adviser-form.controller';
