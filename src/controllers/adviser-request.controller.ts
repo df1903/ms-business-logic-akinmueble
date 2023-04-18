@@ -1,9 +1,10 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
   del,
@@ -13,8 +14,9 @@ import {
   param,
   patch,
   post,
-  requestBody
+  requestBody,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Adviser, Request} from '../models';
 import {AdviserRepository} from '../repositories';
 
@@ -24,6 +26,10 @@ export class AdviserRequestController {
     protected adviserRepository: AdviserRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.listAction],
+  })
   @get('/advisers/{id}/requests', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class AdviserRequestController {
     return this.adviserRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.createAction],
+  })
   @post('/advisers/{id}/requests', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class AdviserRequestController {
     return this.adviserRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.editAction],
+  })
   @patch('/advisers/{id}/requests', {
     responses: {
       '200': {
@@ -93,6 +107,10 @@ export class AdviserRequestController {
     return this.adviserRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.deleteAction],
+  })
   @del('/advisers/{id}/requests', {
     responses: {
       '200': {

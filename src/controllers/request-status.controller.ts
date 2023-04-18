@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {RequestStatus} from '../models';
 import {RequestStatusRepository} from '../repositories';
 
 export class RequestStatusController {
   constructor(
     @repository(RequestStatusRepository)
-    public requestStatusRepository : RequestStatusRepository,
+    public requestStatusRepository: RequestStatusRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
   @post('/request-status')
   @response(200, {
     description: 'RequestStatus model instance',
@@ -47,6 +53,10 @@ export class RequestStatusController {
     return this.requestStatusRepository.create(requestStatus);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
   @get('/request-status/count')
   @response(200, {
     description: 'RequestStatus model count',
@@ -58,6 +68,10 @@ export class RequestStatusController {
     return this.requestStatusRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
   @get('/request-status')
   @response(200, {
     description: 'Array of RequestStatus model instances',
@@ -76,6 +90,10 @@ export class RequestStatusController {
     return this.requestStatusRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
+  })
   @patch('/request-status')
   @response(200, {
     description: 'RequestStatus PATCH success count',
@@ -95,6 +113,10 @@ export class RequestStatusController {
     return this.requestStatusRepository.updateAll(requestStatus, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
   @get('/request-status/{id}')
   @response(200, {
     description: 'RequestStatus model instance',
@@ -106,11 +128,16 @@ export class RequestStatusController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(RequestStatus, {exclude: 'where'}) filter?: FilterExcludingWhere<RequestStatus>
+    @param.filter(RequestStatus, {exclude: 'where'})
+    filter?: FilterExcludingWhere<RequestStatus>,
   ): Promise<RequestStatus> {
     return this.requestStatusRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
+  })
   @patch('/request-status/{id}')
   @response(204, {
     description: 'RequestStatus PATCH success',
@@ -129,6 +156,10 @@ export class RequestStatusController {
     await this.requestStatusRepository.updateById(id, requestStatus);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
   @put('/request-status/{id}')
   @response(204, {
     description: 'RequestStatus PUT success',
@@ -140,6 +171,10 @@ export class RequestStatusController {
     await this.requestStatusRepository.replaceById(id, requestStatus);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.deleteAction],
+  })
   @del('/request-status/{id}')
   @response(204, {
     description: 'RequestStatus DELETE success',

@@ -1,25 +1,37 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Guarantor} from '../models';
 import {GuarantorRepository} from '../repositories';
 
 export class GuarantorController {
   constructor(
     @repository(GuarantorRepository)
-    public guarantorRepository : GuarantorRepository,
+    public guarantorRepository: GuarantorRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.createAction],
+  })
   @post('/guarantor')
   @response(200, {
     description: 'Guarantor model instance',
@@ -41,6 +53,10 @@ export class GuarantorController {
     return this.guarantorRepository.create(guarantor);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.listAction],
+  })
   @get('/guarantor/count')
   @response(200, {
     description: 'Guarantor model count',
@@ -52,6 +68,10 @@ export class GuarantorController {
     return this.guarantorRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.listAction],
+  })
   @get('/guarantor')
   @response(200, {
     description: 'Array of Guarantor model instances',
@@ -70,6 +90,10 @@ export class GuarantorController {
     return this.guarantorRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.editAction],
+  })
   @patch('/guarantor')
   @response(200, {
     description: 'Guarantor PATCH success count',
@@ -89,6 +113,10 @@ export class GuarantorController {
     return this.guarantorRepository.updateAll(guarantor, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.listAction],
+  })
   @get('/guarantor/{id}')
   @response(200, {
     description: 'Guarantor model instance',
@@ -100,11 +128,16 @@ export class GuarantorController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Guarantor, {exclude: 'where'}) filter?: FilterExcludingWhere<Guarantor>
+    @param.filter(Guarantor, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Guarantor>,
   ): Promise<Guarantor> {
     return this.guarantorRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.editAction],
+  })
   @patch('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor PATCH success',
@@ -123,6 +156,10 @@ export class GuarantorController {
     await this.guarantorRepository.updateById(id, guarantor);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.createAction],
+  })
   @put('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor PUT success',
@@ -134,6 +171,10 @@ export class GuarantorController {
     await this.guarantorRepository.replaceById(id, guarantor);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.deleteAction],
+  })
   @del('/guarantor/{id}')
   @response(204, {
     description: 'Guarantor DELETE success',

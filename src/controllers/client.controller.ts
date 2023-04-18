@@ -1,25 +1,37 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
 
 export class ClientController {
   constructor(
     @repository(ClientRepository)
-    public clientRepository : ClientRepository,
+    public clientRepository: ClientRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.createAction],
+  })
   @post('/client')
   @response(200, {
     description: 'Client model instance',
@@ -41,17 +53,23 @@ export class ClientController {
     return this.clientRepository.create(client);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.listAction],
+  })
   @get('/client/count')
   @response(200, {
     description: 'Client model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Client) where?: Where<Client>,
-  ): Promise<Count> {
+  async count(@param.where(Client) where?: Where<Client>): Promise<Count> {
     return this.clientRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.listAction],
+  })
   @get('/client')
   @response(200, {
     description: 'Array of Client model instances',
@@ -64,12 +82,14 @@ export class ClientController {
       },
     },
   })
-  async find(
-    @param.filter(Client) filter?: Filter<Client>,
-  ): Promise<Client[]> {
+  async find(@param.filter(Client) filter?: Filter<Client>): Promise<Client[]> {
     return this.clientRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.editAction],
+  })
   @patch('/client')
   @response(200, {
     description: 'Client PATCH success count',
@@ -89,6 +109,10 @@ export class ClientController {
     return this.clientRepository.updateAll(client, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.listAction],
+  })
   @get('/client/{id}')
   @response(200, {
     description: 'Client model instance',
@@ -100,11 +124,16 @@ export class ClientController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Client, {exclude: 'where'}) filter?: FilterExcludingWhere<Client>
+    @param.filter(Client, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Client>,
   ): Promise<Client> {
     return this.clientRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.editAction],
+  })
   @patch('/client/{id}')
   @response(204, {
     description: 'Client PATCH success',
@@ -123,6 +152,10 @@ export class ClientController {
     await this.clientRepository.updateById(id, client);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.createAction],
+  })
   @put('/client/{id}')
   @response(204, {
     description: 'Client PUT success',
@@ -134,6 +167,10 @@ export class ClientController {
     await this.clientRepository.replaceById(id, client);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.deleteAction],
+  })
   @del('/client/{id}')
   @response(204, {
     description: 'Client DELETE success',

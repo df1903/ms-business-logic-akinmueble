@@ -1,22 +1,24 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { City, Department } from '../models';
-import { DepartmentRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {City, Department} from '../models';
+import {DepartmentRepository} from '../repositories';
 
 export class DepartmentCityController {
   constructor(
@@ -24,6 +26,10 @@ export class DepartmentCityController {
     protected departmentRepository: DepartmentRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.listAction],
+  })
   @get('/departments/{id}/cities', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class DepartmentCityController {
     return this.departmentRepository.cities(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.createAction],
+  })
   @post('/departments/{id}/cities', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class DepartmentCityController {
     return this.departmentRepository.cities(id).create(city);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.editAction],
+  })
   @patch('/departments/{id}/cities', {
     responses: {
       '200': {
@@ -92,6 +106,10 @@ export class DepartmentCityController {
     return this.departmentRepository.cities(id).patch(city, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.deleteAction],
+  })
   @del('/departments/{id}/cities', {
     responses: {
       '200': {

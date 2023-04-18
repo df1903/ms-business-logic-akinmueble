@@ -1,28 +1,34 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { Client, Request } from '../models';
-import { ClientRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {Client, Request} from '../models';
+import {ClientRepository} from '../repositories';
 
 export class ClientRequestController {
   constructor(
     @repository(ClientRepository) protected clientRepository: ClientRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.listAction],
+  })
   @get('/clients/{id}/requests', {
     responses: {
       '200': {
@@ -42,6 +48,10 @@ export class ClientRequestController {
     return this.clientRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.createAction],
+  })
   @post('/clients/{id}/requests', {
     responses: {
       '200': {
@@ -68,6 +78,10 @@ export class ClientRequestController {
     return this.clientRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.editAction],
+  })
   @patch('/clients/{id}/requests', {
     responses: {
       '200': {
@@ -92,6 +106,10 @@ export class ClientRequestController {
     return this.clientRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuClientId, SecurityConfig.deleteAction],
+  })
   @del('/clients/{id}/requests', {
     responses: {
       '200': {

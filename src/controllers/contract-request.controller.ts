@@ -1,22 +1,24 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { Contract, Request } from '../models';
-import { ContractRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {Contract, Request} from '../models';
+import {ContractRepository} from '../repositories';
 
 export class ContractRequestController {
   constructor(
@@ -24,6 +26,10 @@ export class ContractRequestController {
     protected contractRepository: ContractRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuContractId, SecurityConfig.listAction],
+  })
   @get('/contracts/{id}/request', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class ContractRequestController {
     return this.contractRepository.request(id).get(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuContractId, SecurityConfig.createAction],
+  })
   @post('/contracts/{id}/request', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class ContractRequestController {
     return this.contractRepository.request(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuContractId, SecurityConfig.editAction],
+  })
   @patch('/contracts/{id}/request', {
     responses: {
       '200': {
@@ -93,6 +107,10 @@ export class ContractRequestController {
     return this.contractRepository.request(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuContractId, SecurityConfig.deleteAction],
+  })
   @del('/contracts/{id}/request', {
     responses: {
       '200': {
