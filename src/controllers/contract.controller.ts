@@ -156,7 +156,7 @@ export class ContractController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuContractId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuContractId, SecurityConfig.editAction],
   })
   @put('/contract/{id}')
   @response(204, {

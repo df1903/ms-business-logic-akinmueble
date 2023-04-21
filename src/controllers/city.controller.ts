@@ -153,7 +153,7 @@ export class CityController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuCityId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuCityId, SecurityConfig.editAction],
   })
   @put('/city/{id}')
   @response(204, {

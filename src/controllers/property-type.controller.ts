@@ -158,7 +158,7 @@ export class PropertyTypeController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.editAction],
   })
   @put('/property-type/{id}')
   @response(204, {

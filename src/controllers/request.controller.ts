@@ -156,7 +156,7 @@ export class RequestController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
   })
   @put('/request/{id}')
   @response(204, {

@@ -158,7 +158,7 @@ export class RequestTypeController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.editAction],
   })
   @put('/request-type/{id}')
   @response(204, {

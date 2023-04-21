@@ -158,7 +158,7 @@ export class GuarantorController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuGuarantorId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.editAction],
   })
   @put('/guarantor/{id}')
   @response(204, {

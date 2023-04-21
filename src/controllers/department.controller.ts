@@ -158,7 +158,7 @@ export class DepartmentController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuDepartmentId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.editAction],
   })
   @put('/department/{id}')
   @response(204, {

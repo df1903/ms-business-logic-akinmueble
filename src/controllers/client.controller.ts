@@ -154,7 +154,7 @@ export class ClientController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuClientId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuClientId, SecurityConfig.editAction],
   })
   @put('/client/{id}')
   @response(204, {

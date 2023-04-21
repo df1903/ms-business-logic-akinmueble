@@ -154,7 +154,7 @@ export class PhotoController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuPhotoId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.editAction],
   })
   @put('/photo/{id}')
   @response(204, {

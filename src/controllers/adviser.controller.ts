@@ -156,7 +156,7 @@ export class AdviserController {
 
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuAdviserId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.editAction],
   })
   @put('/adviser/{id}')
   @response(204, {
