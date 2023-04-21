@@ -19,7 +19,7 @@ import {
   response,
 } from '@loopback/rest';
 import {SecurityConfig} from '../config/security.config';
-import {Request} from '../models';
+import {Request, RequestsByAdviserDate} from '../models';
 import {RequestRepository} from '../repositories';
 
 export class RequestController {
@@ -179,5 +179,47 @@ export class RequestController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.requestRepository.deleteById(id);
+  }
+
+  /**
+   * CUSTOM METHODS
+   */
+
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
+  @get('/request-by-adviser')
+  @response(200, {
+    description: 'Array of Request model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Request, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByAdviserAndDate(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(RequestsByAdviserDate),
+        },
+      },
+    })
+    data: RequestsByAdviserDate,
+  ): Promise<Request[]> {
+    return this.requestRepository.find({
+      where: {
+        adviserId: data.adviserId,
+        date: {
+          between: [data.startDate, data.endDate],
+        },
+        requestTypeId: 2,
+      },
+      include: [{relation: 'property'}],
+    });
   }
 }
