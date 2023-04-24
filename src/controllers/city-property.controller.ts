@@ -1,28 +1,34 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { City, Property } from '../models';
-import { CityRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {City, Property} from '../models';
+import {CityRepository} from '../repositories';
 
 export class CityPropertyController {
   constructor(
     @repository(CityRepository) protected cityRepository: CityRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuCityId, SecurityConfig.listAction],
+  })
   @get('/cities/{id}/properties', {
     responses: {
       '200': {
@@ -42,6 +48,10 @@ export class CityPropertyController {
     return this.cityRepository.properties(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuCityId, SecurityConfig.createAction],
+  })
   @post('/cities/{id}/properties', {
     responses: {
       '200': {
@@ -68,6 +78,10 @@ export class CityPropertyController {
     return this.cityRepository.properties(id).create(property);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuCityId, SecurityConfig.editAction],
+  })
   @patch('/cities/{id}/properties', {
     responses: {
       '200': {
@@ -92,6 +106,10 @@ export class CityPropertyController {
     return this.cityRepository.properties(id).patch(property, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuCityId, SecurityConfig.deleteAction],
+  })
   @del('/cities/{id}/properties', {
     responses: {
       '200': {

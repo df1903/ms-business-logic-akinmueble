@@ -1,29 +1,38 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
-  get, HttpErrors,
+  get,
+  HttpErrors,
   oas,
   param,
-  post, Request,
-  requestBody, Response,
-  RestBindings
+  post,
+  Request,
+  requestBody,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
 import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
 import {promisify} from 'util';
 import {GeneralConfig} from '../config/general.config';
-const readdir = promisify(fs.readdir)
+import {SecurityConfig} from '../config/security.config';
+const readdir = promisify(fs.readdir);
 
 export class FileManagerController {
   constructor() {}
 
-  @post('/upload-property-file' ,{
-    responses :{
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuFileManagerId, SecurityConfig.createAction],
+  })
+  @post('/upload-property-file', {
+    responses: {
       200: {
-        content:{
+        content: {
           'application/json': {
             schema: {
-              type:'object',
+              type: 'object',
             },
           },
         },
@@ -35,7 +44,7 @@ export class FileManagerController {
     @inject(RestBindings.Http.RESPONSE) response: Response,
     @requestBody.file() request: Request,
   ): Promise<object | false> {
-    const filePath = path.join(__dirname,GeneralConfig.propertiesFilesFolder);
+    const filePath = path.join(__dirname, GeneralConfig.propertiesFilesFolder);
     const res = await this.storeFileToPath(
       filePath,
       GeneralConfig.propertyField,
@@ -43,9 +52,9 @@ export class FileManagerController {
       response,
       GeneralConfig.imagesExtensions,
     );
-    if (res){
+    if (res) {
       const filename = response.req?.file?.filename;
-      if (filename){
+      if (filename) {
         return {file: filename};
       }
     }
@@ -59,14 +68,14 @@ export class FileManagerController {
    */
 
   // eslint-disable-next-line @typescript-eslint/no-shadow
-  private getMulterStorageConfig(path: string){
-    let filename='';
+  private getMulterStorageConfig(path: string) {
+    let filename = '';
     const storage = multer.diskStorage({
-      destination:function(req,file, cb){
-        cb(null,path);
+      destination: function (req, file, cb) {
+        cb(null, path);
       },
-      filename: function(res, file,cb){
-        filename =`${Date.now()}-${file.originalname}`;
+      filename: function (res, file, cb) {
+        filename = `${Date.now()}-${file.originalname}`;
         cb(null, filename);
       },
     });
@@ -84,35 +93,34 @@ export class FileManagerController {
    */
 
   private storeFileToPath(
-    storePath:string,
-    fieldname:string,
+    storePath: string,
+    fieldname: string,
     request: Request,
     response: Response,
-    acceptedExt: string [],
-  ): Promise<object>{
-
+    acceptedExt: string[],
+  ): Promise<object> {
     //console.log(storage);
 
     return new Promise<Object>((resolve, reject) => {
       const storage = this.getMulterStorageConfig(storePath);
       //console.log(storage);
       const upload = multer({
-        storage:storage,
-        fileFilter: function(req,file, callback){
+        storage: storage,
+        fileFilter: function (req, file, callback) {
           const ext = path.extname(file.originalname).toUpperCase();
           console.log(ext);
-          if (acceptedExt.includes(ext)){
+          if (acceptedExt.includes(ext)) {
             return callback(null, true);
           }
           return callback(
             new HttpErrors[400]('This format file is not supported'),
           );
         },
-        limits:{},
+        limits: {},
       }).single(fieldname);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      upload(request, response,(err: any)=>{
-        if(err){
+      upload(request, response, (err: any) => {
+        if (err) {
           reject(err);
         }
         resolve(response);
@@ -122,21 +130,25 @@ export class FileManagerController {
 
   /** File Download */
 
-  @get('/files/{type}',{
-    responses:{
-      200:{
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuFileManagerId, SecurityConfig.downloadAction],
+  })
+  @get('/files/{type}', {
+    responses: {
+      200: {
         content: {
           //string[]
-          'application/json':{
+          'application/json': {
             schema: {
-              type:'array',
-              items:{
-                type:'string',
+              type: 'array',
+              items: {
+                type: 'string',
               },
             },
           },
         },
-        description:'A list of files',
+        description: 'A list of files',
       },
     },
   })
@@ -146,15 +158,19 @@ export class FileManagerController {
     return files;
   }
 
-  @get("/GetFiles/{type}/{name}")
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuFileManagerId, SecurityConfig.downloadAction],
+  })
+  @get('/GetFiles/{type}/{name}')
   @oas.response.file()
   async downloadFileByName(
     @param.path.number('type') type: number,
     @param.path.string('name') fileName: string,
     @inject(RestBindings.Http.RESPONSE) response: Response,
-  ){
+  ) {
     const folder = this.getFilesByType(type);
-    const  file = this.validateFileName(folder, fileName);
+    const file = this.validateFileName(folder, fileName);
     response.download(file, fileName);
     return response;
   }
@@ -164,9 +180,9 @@ export class FileManagerController {
    * @param type
    */
 
-  private getFilesByType(type: number){
+  private getFilesByType(type: number) {
     let filePath = '';
-    switch(type){
+    switch (type) {
       //amusement
       case 1:
         filePath = path.join(__dirname, GeneralConfig.propertiesFilesFolder);
@@ -185,10 +201,9 @@ export class FileManagerController {
    * @param fileName = File name
    */
 
-  private validateFileName(folder: string, fileName: string){
+  private validateFileName(folder: string, fileName: string) {
     const resolved = path.resolve(folder, fileName);
-    if(resolved.startsWith(folder)) return resolved;
+    if (resolved.startsWith(folder)) return resolved;
     throw new HttpErrors[400](`Invalid file name: ${fileName}`);
   }
-
 }

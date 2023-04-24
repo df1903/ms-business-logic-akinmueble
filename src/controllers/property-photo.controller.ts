@@ -1,22 +1,24 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { Photo, Property } from '../models';
-import { PropertyRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {Photo, Property} from '../models';
+import {PropertyRepository} from '../repositories';
 
 export class PropertyPhotoController {
   constructor(
@@ -24,6 +26,10 @@ export class PropertyPhotoController {
     protected propertyRepository: PropertyRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction],
+  })
   @get('/properties/{id}/photos', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class PropertyPhotoController {
     return this.propertyRepository.photos(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.createAction],
+  })
   @post('/properties/{id}/photos', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class PropertyPhotoController {
     return this.propertyRepository.photos(id).create(photo);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.editAction],
+  })
   @patch('/properties/{id}/photos', {
     responses: {
       '200': {
@@ -92,6 +106,10 @@ export class PropertyPhotoController {
     return this.propertyRepository.photos(id).patch(photo, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.deleteAction],
+  })
   @del('/properties/{id}/photos', {
     responses: {
       '200': {

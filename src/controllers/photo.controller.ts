@@ -1,25 +1,37 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Photo} from '../models';
 import {PhotoRepository} from '../repositories';
 
 export class PhotoController {
   constructor(
     @repository(PhotoRepository)
-    public photoRepository : PhotoRepository,
+    public photoRepository: PhotoRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.createAction],
+  })
   @post('/photo')
   @response(200, {
     description: 'Photo model instance',
@@ -41,17 +53,23 @@ export class PhotoController {
     return this.photoRepository.create(photo);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.listAction],
+  })
   @get('/photo/count')
   @response(200, {
     description: 'Photo model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(Photo) where?: Where<Photo>,
-  ): Promise<Count> {
+  async count(@param.where(Photo) where?: Where<Photo>): Promise<Count> {
     return this.photoRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.listAction],
+  })
   @get('/photo')
   @response(200, {
     description: 'Array of Photo model instances',
@@ -64,12 +82,14 @@ export class PhotoController {
       },
     },
   })
-  async find(
-    @param.filter(Photo) filter?: Filter<Photo>,
-  ): Promise<Photo[]> {
+  async find(@param.filter(Photo) filter?: Filter<Photo>): Promise<Photo[]> {
     return this.photoRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.editAction],
+  })
   @patch('/photo')
   @response(200, {
     description: 'Photo PATCH success count',
@@ -89,6 +109,10 @@ export class PhotoController {
     return this.photoRepository.updateAll(photo, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.listAction],
+  })
   @get('/photo/{id}')
   @response(200, {
     description: 'Photo model instance',
@@ -100,11 +124,16 @@ export class PhotoController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Photo, {exclude: 'where'}) filter?: FilterExcludingWhere<Photo>
+    @param.filter(Photo, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Photo>,
   ): Promise<Photo> {
     return this.photoRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.editAction],
+  })
   @patch('/photo/{id}')
   @response(204, {
     description: 'Photo PATCH success',
@@ -123,6 +152,10 @@ export class PhotoController {
     await this.photoRepository.updateById(id, photo);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.editAction],
+  })
   @put('/photo/{id}')
   @response(204, {
     description: 'Photo PUT success',
@@ -134,6 +167,10 @@ export class PhotoController {
     await this.photoRepository.replaceById(id, photo);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPhotoId, SecurityConfig.deleteAction],
+  })
   @del('/photo/{id}')
   @response(204, {
     description: 'Photo DELETE success',

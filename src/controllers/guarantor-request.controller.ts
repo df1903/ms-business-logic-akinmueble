@@ -1,22 +1,24 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { Guarantor, Request } from '../models';
-import { GuarantorRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {Guarantor, Request} from '../models';
+import {GuarantorRepository} from '../repositories';
 
 export class GuarantorRequestController {
   constructor(
@@ -24,6 +26,10 @@ export class GuarantorRequestController {
     protected guarantorRepository: GuarantorRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.listAction],
+  })
   @get('/guarantors/{id}/requests', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class GuarantorRequestController {
     return this.guarantorRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.createAction],
+  })
   @post('/guarantors/{id}/requests', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class GuarantorRequestController {
     return this.guarantorRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.editAction],
+  })
   @patch('/guarantors/{id}/requests', {
     responses: {
       '200': {
@@ -93,6 +107,10 @@ export class GuarantorRequestController {
     return this.guarantorRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuGuarantorId, SecurityConfig.deleteAction],
+  })
   @del('/guarantors/{id}/requests', {
     responses: {
       '200': {

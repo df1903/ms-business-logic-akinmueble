@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,17 +16,20 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  RequestStatus,
-  Request,
-} from '../models';
+import {SecurityConfig} from '../config/security.config';
+import {Request, RequestStatus} from '../models';
 import {RequestStatusRepository} from '../repositories';
 
 export class RequestStatusRequestController {
   constructor(
-    @repository(RequestStatusRepository) protected requestStatusRepository: RequestStatusRepository,
-  ) { }
+    @repository(RequestStatusRepository)
+    protected requestStatusRepository: RequestStatusRepository,
+  ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
   @get('/request-statuses/{id}/requests', {
     responses: {
       '200': {
@@ -45,6 +49,10 @@ export class RequestStatusRequestController {
     return this.requestStatusRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
   @post('/request-statuses/{id}/requests', {
     responses: {
       '200': {
@@ -61,15 +69,20 @@ export class RequestStatusRequestController {
           schema: getModelSchemaRef(Request, {
             title: 'NewRequestInRequestStatus',
             exclude: ['id'],
-            optional: ['requestStatusId']
+            optional: ['requestStatusId'],
           }),
         },
       },
-    }) request: Omit<Request, 'id'>,
+    })
+    request: Omit<Request, 'id'>,
   ): Promise<Request> {
     return this.requestStatusRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
+  })
   @patch('/request-statuses/{id}/requests', {
     responses: {
       '200': {
@@ -88,11 +101,16 @@ export class RequestStatusRequestController {
       },
     })
     request: Partial<Request>,
-    @param.query.object('where', getWhereSchemaFor(Request)) where?: Where<Request>,
+    @param.query.object('where', getWhereSchemaFor(Request))
+    where?: Where<Request>,
   ): Promise<Count> {
     return this.requestStatusRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.deleteAction],
+  })
   @del('/request-statuses/{id}/requests', {
     responses: {
       '200': {
@@ -103,7 +121,8 @@ export class RequestStatusRequestController {
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Request)) where?: Where<Request>,
+    @param.query.object('where', getWhereSchemaFor(Request))
+    where?: Where<Request>,
   ): Promise<Count> {
     return this.requestStatusRepository.requests(id).delete(where);
   }

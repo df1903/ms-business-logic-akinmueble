@@ -1,23 +1,20 @@
-import {
-  repository,
-} from '@loopback/repository';
-import {
-  param,
-  get,
-  getModelSchemaRef,
-} from '@loopback/rest';
-import {
-  Request,
-  RequestType,
-} from '../models';
+import {authenticate} from '@loopback/authentication';
+import {repository} from '@loopback/repository';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
+import {Request, RequestType} from '../models';
 import {RequestRepository} from '../repositories';
 
 export class RequestRequestTypeController {
   constructor(
     @repository(RequestRepository)
     public requestRepository: RequestRepository,
-  ) { }
+  ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
   @get('/requests/{id}/request-type', {
     responses: {
       '200': {

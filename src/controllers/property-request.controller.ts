@@ -1,22 +1,24 @@
+import {authenticate} from '@loopback/authentication';
 import {
-    Count,
-    CountSchema,
-    Filter,
-    repository,
-    Where
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
 } from '@loopback/repository';
 import {
-    del,
-    get,
-    getModelSchemaRef,
-    getWhereSchemaFor,
-    param,
-    patch,
-    post,
-    requestBody
+  del,
+  get,
+  getModelSchemaRef,
+  getWhereSchemaFor,
+  param,
+  patch,
+  post,
+  requestBody,
 } from '@loopback/rest';
-import { Property, Request } from '../models';
-import { PropertyRepository } from '../repositories';
+import {SecurityConfig} from '../config/security.config';
+import {Property, Request} from '../models';
+import {PropertyRepository} from '../repositories';
 
 export class PropertyRequestController {
   constructor(
@@ -24,6 +26,10 @@ export class PropertyRequestController {
     protected propertyRepository: PropertyRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listAction],
+  })
   @get('/properties/{id}/requests', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class PropertyRequestController {
     return this.propertyRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.createAction],
+  })
   @post('/properties/{id}/requests', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class PropertyRequestController {
     return this.propertyRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.editAction],
+  })
   @patch('/properties/{id}/requests', {
     responses: {
       '200': {
@@ -93,6 +107,10 @@ export class PropertyRequestController {
     return this.propertyRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.deleteAction],
+  })
   @del('/properties/{id}/requests', {
     responses: {
       '200': {

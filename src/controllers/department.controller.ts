@@ -1,25 +1,37 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
-  del, get,
-  getModelSchemaRef, param, patch, post, put, requestBody,
-  response
+  del,
+  get,
+  getModelSchemaRef,
+  param,
+  patch,
+  post,
+  put,
+  requestBody,
+  response,
 } from '@loopback/rest';
-import {Department} from "../models";
+import {SecurityConfig} from '../config/security.config';
+import {Department} from '../models';
 import {DepartmentRepository} from '../repositories';
 
 export class DepartmentController {
   constructor(
     @repository(DepartmentRepository)
-    public departmentRepository : DepartmentRepository,
+    public departmentRepository: DepartmentRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.createAction],
+  })
   @post('/department')
   @response(200, {
     description: 'Department model instance',
@@ -41,6 +53,10 @@ export class DepartmentController {
     return this.departmentRepository.create(department);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.listAction],
+  })
   @get('/department/count')
   @response(200, {
     description: 'Department model count',
@@ -52,6 +68,10 @@ export class DepartmentController {
     return this.departmentRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.listAction],
+  })
   @get('/department')
   @response(200, {
     description: 'Array of Department model instances',
@@ -70,6 +90,10 @@ export class DepartmentController {
     return this.departmentRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.editAction],
+  })
   @patch('/department')
   @response(200, {
     description: 'Department PATCH success count',
@@ -89,6 +113,10 @@ export class DepartmentController {
     return this.departmentRepository.updateAll(department, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.listAction],
+  })
   @get('/department/{id}')
   @response(200, {
     description: 'Department model instance',
@@ -100,11 +128,16 @@ export class DepartmentController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Department, {exclude: 'where'}) filter?: FilterExcludingWhere<Department>
+    @param.filter(Department, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Department>,
   ): Promise<Department> {
     return this.departmentRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.editAction],
+  })
   @patch('/department/{id}')
   @response(204, {
     description: 'Department PATCH success',
@@ -123,6 +156,10 @@ export class DepartmentController {
     await this.departmentRepository.updateById(id, department);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.editAction],
+  })
   @put('/department/{id}')
   @response(204, {
     description: 'Department PUT success',
@@ -134,6 +171,10 @@ export class DepartmentController {
     await this.departmentRepository.replaceById(id, department);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuDepartmentId, SecurityConfig.deleteAction],
+  })
   @del('/department/{id}')
   @response(204, {
     description: 'Department DELETE success',
