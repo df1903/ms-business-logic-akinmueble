@@ -8,6 +8,7 @@ export class GeneralSystemVariablesRepository extends DefaultCrudRepository<
   typeof GeneralSystemVariables.prototype.id,
   GeneralSystemVariablesRelations
 > {
+  find: any;
   constructor(
     @inject('datasources.mysql') dataSource: MysqlDataSource,
   ) {

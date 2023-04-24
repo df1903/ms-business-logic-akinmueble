@@ -13,4 +13,5 @@ export * from './property.model';
 export * from './request.model';
 export * from './request-type.model';
 export * from './request-status.model';
+export * from './adviser-form.model';
 export * from './requests-by-adviser-date.model';

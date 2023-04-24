@@ -5,4 +5,6 @@ export namespace GeneralConfig {
   export const imagesExtensions: string[] = ['.JPG', '.PNG', '.JPEG'];
   export const urlNotifications2FA: string =
     'http://localhost:7183/Notifications/send-code-2fa';
+  export const urlNotificationsEmail: string =
+    'http://localhost:7183/Notifications/send-general-email';
 }
