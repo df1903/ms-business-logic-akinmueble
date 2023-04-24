@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -17,6 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {PropertyType} from '../models';
 import {PropertyTypeRepository} from '../repositories';
 
@@ -26,6 +28,10 @@ export class PropertyTypeController {
     public propertyTypeRepository: PropertyTypeRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.createAction],
+  })
   @post('/property-type')
   @response(200, {
     description: 'PropertyType model instance',
@@ -47,6 +53,10 @@ export class PropertyTypeController {
     return this.propertyTypeRepository.create(propertyType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.listAction],
+  })
   @get('/property-type/count')
   @response(200, {
     description: 'PropertyType model count',
@@ -58,6 +68,10 @@ export class PropertyTypeController {
     return this.propertyTypeRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.listAction],
+  })
   @get('/property-type')
   @response(200, {
     description: 'Array of PropertyType model instances',
@@ -76,6 +90,10 @@ export class PropertyTypeController {
     return this.propertyTypeRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.editAction],
+  })
   @patch('/property-type')
   @response(200, {
     description: 'PropertyType PATCH success count',
@@ -95,6 +113,10 @@ export class PropertyTypeController {
     return this.propertyTypeRepository.updateAll(propertyType, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.listAction],
+  })
   @get('/property-type/{id}')
   @response(200, {
     description: 'PropertyType model instance',
@@ -112,6 +134,10 @@ export class PropertyTypeController {
     return this.propertyTypeRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.editAction],
+  })
   @patch('/property-type/{id}')
   @response(204, {
     description: 'PropertyType PATCH success',
@@ -130,6 +156,10 @@ export class PropertyTypeController {
     await this.propertyTypeRepository.updateById(id, propertyType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.editAction],
+  })
   @put('/property-type/{id}')
   @response(204, {
     description: 'PropertyType PUT success',
@@ -141,6 +171,10 @@ export class PropertyTypeController {
     await this.propertyTypeRepository.replaceById(id, propertyType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.deleteAction],
+  })
   @del('/property-type/{id}')
   @response(204, {
     description: 'PropertyType DELETE success',

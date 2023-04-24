@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -7,25 +8,30 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {RequestType} from '../models';
 import {RequestTypeRepository} from '../repositories';
 
 export class RequestTypeController {
   constructor(
     @repository(RequestTypeRepository)
-    public requestTypeRepository : RequestTypeRepository,
+    public requestTypeRepository: RequestTypeRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.createAction],
+  })
   @post('/request-type')
   @response(200, {
     description: 'RequestType model instance',
@@ -47,6 +53,10 @@ export class RequestTypeController {
     return this.requestTypeRepository.create(requestType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.listAction],
+  })
   @get('/request-type/count')
   @response(200, {
     description: 'RequestType model count',
@@ -58,6 +68,10 @@ export class RequestTypeController {
     return this.requestTypeRepository.count(where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.listAction],
+  })
   @get('/request-type')
   @response(200, {
     description: 'Array of RequestType model instances',
@@ -76,6 +90,10 @@ export class RequestTypeController {
     return this.requestTypeRepository.find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.editAction],
+  })
   @patch('/request-type')
   @response(200, {
     description: 'RequestType PATCH success count',
@@ -95,6 +113,10 @@ export class RequestTypeController {
     return this.requestTypeRepository.updateAll(requestType, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.listAction],
+  })
   @get('/request-type/{id}')
   @response(200, {
     description: 'RequestType model instance',
@@ -106,11 +128,16 @@ export class RequestTypeController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(RequestType, {exclude: 'where'}) filter?: FilterExcludingWhere<RequestType>
+    @param.filter(RequestType, {exclude: 'where'})
+    filter?: FilterExcludingWhere<RequestType>,
   ): Promise<RequestType> {
     return this.requestTypeRepository.findById(id, filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.editAction],
+  })
   @patch('/request-type/{id}')
   @response(204, {
     description: 'RequestType PATCH success',
@@ -129,6 +156,10 @@ export class RequestTypeController {
     await this.requestTypeRepository.updateById(id, requestType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.editAction],
+  })
   @put('/request-type/{id}')
   @response(204, {
     description: 'RequestType PUT success',
@@ -140,6 +171,10 @@ export class RequestTypeController {
     await this.requestTypeRepository.replaceById(id, requestType);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.deleteAction],
+  })
   @del('/request-type/{id}')
   @response(204, {
     description: 'RequestType DELETE success',

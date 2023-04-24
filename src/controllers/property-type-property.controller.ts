@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,6 +16,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
+import {SecurityConfig} from '../config/security.config';
 import {Property, PropertyType} from '../models';
 import {PropertyTypeRepository} from '../repositories';
 
@@ -24,6 +26,10 @@ export class PropertyTypePropertyController {
     protected propertyTypeRepository: PropertyTypeRepository,
   ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.listAction],
+  })
   @get('/property-types/{id}/properties', {
     responses: {
       '200': {
@@ -43,6 +49,10 @@ export class PropertyTypePropertyController {
     return this.propertyTypeRepository.properties(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.createAction],
+  })
   @post('/property-types/{id}/properties', {
     responses: {
       '200': {
@@ -69,6 +79,10 @@ export class PropertyTypePropertyController {
     return this.propertyTypeRepository.properties(id).create(property);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.editAction],
+  })
   @patch('/property-types/{id}/properties', {
     responses: {
       '200': {
@@ -93,6 +107,10 @@ export class PropertyTypePropertyController {
     return this.propertyTypeRepository.properties(id).patch(property, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuPropertyTypeId, SecurityConfig.deleteAction],
+  })
   @del('/property-types/{id}/properties', {
     responses: {
       '200': {

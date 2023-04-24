@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {
   Count,
   CountSchema,
@@ -15,17 +16,20 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  RequestType,
-  Request,
-} from '../models';
+import {SecurityConfig} from '../config/security.config';
+import {Request, RequestType} from '../models';
 import {RequestTypeRepository} from '../repositories';
 
 export class RequestTypeRequestController {
   constructor(
-    @repository(RequestTypeRepository) protected requestTypeRepository: RequestTypeRepository,
-  ) { }
+    @repository(RequestTypeRepository)
+    protected requestTypeRepository: RequestTypeRepository,
+  ) {}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.listAction],
+  })
   @get('/request-types/{id}/requests', {
     responses: {
       '200': {
@@ -45,6 +49,10 @@ export class RequestTypeRequestController {
     return this.requestTypeRepository.requests(id).find(filter);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.createAction],
+  })
   @post('/request-types/{id}/requests', {
     responses: {
       '200': {
@@ -61,15 +69,20 @@ export class RequestTypeRequestController {
           schema: getModelSchemaRef(Request, {
             title: 'NewRequestInRequestType',
             exclude: ['id'],
-            optional: ['requestTypeId']
+            optional: ['requestTypeId'],
           }),
         },
       },
-    }) request: Omit<Request, 'id'>,
+    })
+    request: Omit<Request, 'id'>,
   ): Promise<Request> {
     return this.requestTypeRepository.requests(id).create(request);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.editAction],
+  })
   @patch('/request-types/{id}/requests', {
     responses: {
       '200': {
@@ -88,11 +101,16 @@ export class RequestTypeRequestController {
       },
     })
     request: Partial<Request>,
-    @param.query.object('where', getWhereSchemaFor(Request)) where?: Where<Request>,
+    @param.query.object('where', getWhereSchemaFor(Request))
+    where?: Where<Request>,
   ): Promise<Count> {
     return this.requestTypeRepository.requests(id).patch(request, where);
   }
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestTypeId, SecurityConfig.deleteAction],
+  })
   @del('/request-types/{id}/requests', {
     responses: {
       '200': {
@@ -103,7 +121,8 @@ export class RequestTypeRequestController {
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Request)) where?: Where<Request>,
+    @param.query.object('where', getWhereSchemaFor(Request))
+    where?: Where<Request>,
   ): Promise<Count> {
     return this.requestTypeRepository.requests(id).delete(where);
   }
