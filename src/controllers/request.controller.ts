@@ -1,11 +1,12 @@
 import {authenticate} from '@loopback/authentication';
+import {service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
   repository,
-  Where,
+  Where
 } from '@loopback/repository';
 import {
   del,
@@ -18,14 +19,25 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {GeneralConfig} from '../config/general.config';
 import {SecurityConfig} from '../config/security.config';
 import {Request, RequestsByAdviserDate} from '../models';
-import {RequestRepository} from '../repositories';
+import {AdviserRepository, ClientRepository, PropertyRepository, RequestRepository} from '../repositories';
+import {NotificationsService} from '../services';
 
 export class RequestController {
+
   constructor(
     @repository(RequestRepository)
     public requestRepository: RequestRepository,
+    @repository(PropertyRepository)
+    public propertyRepository: PropertyRepository,
+    @repository(AdviserRepository)
+    public adviserRepository: AdviserRepository,
+    @repository(ClientRepository)
+    public clientRepository : ClientRepository,
+    @service(NotificationsService)
+    public notificationService: NotificationsService,
   ) {}
 
   @authenticate({
@@ -50,6 +62,44 @@ export class RequestController {
     })
     request: Omit<Request, 'id'>,
   ): Promise<Request> {
+    request.adviserId = await this.propertyRepository.findOne({
+      where: {id: request.propertyId
+      }
+    });
+    //method to notify the adviser in charge about the request for their property
+    let property = await this.propertyRepository.findOne({
+      where: {id: request.propertyId},
+    });
+    if (property){
+      let adviser = await this.adviserRepository.findOne({
+        where: {id: request.adviserId},
+      });
+      if (adviser) {
+        let client = await this.clientRepository.findOne({
+          where :{id: request.clientId}
+        });
+        if (client){
+
+          let subject = "New real estate request"
+
+          let content = `The client ${client?.firstName} with id ${client.id} has made a request to your property `+
+         `, which has the following address ${property?.address} and `+
+         `price $${property?.salePrice}\r\n <br/ > The applicant's data `+
+         `are:<br/ >  Name: ${client?.firstName}  <br/ > FirstName: ${client?.firstLastname}  <br/ > `+
+         `Email: ${client?.email}  <br/ > Phone: ${client?.phone}`;
+
+          let data = {
+          destinyEmail: adviser.email,
+          destinyName: adviser.firstName,
+          emailSubject: subject,
+          emailBody: content,
+          };
+
+          let url = GeneralConfig.urlNotificationsEmail;
+          this.notificationService.sendNotification(data, url);
+        }
+      }
+    }
     return this.requestRepository.create(request);
   }
 
@@ -223,3 +273,4 @@ export class RequestController {
     });
   }
 }
+
