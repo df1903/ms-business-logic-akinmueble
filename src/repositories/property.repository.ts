@@ -12,12 +12,12 @@ import {
   Property,
   PropertyRelations,
   PropertyType,
-  Request,
-} from '../models';
+  Request, Adviser} from '../models';
 import {CityRepository} from './city.repository';
 import {PhotoRepository} from './photo.repository';
 import {PropertyTypeRepository} from './property-type.repository';
 import {RequestRepository} from './request.repository';
+import {AdviserRepository} from './adviser.repository';
 
 export class PropertyRepository extends DefaultCrudRepository<
   Property,
@@ -41,6 +41,8 @@ export class PropertyRepository extends DefaultCrudRepository<
     typeof Property.prototype.id
   >;
 
+  public readonly adviser: BelongsToAccessor<Adviser, typeof Property.prototype.id>;
+
   constructor(
     @inject('datasources.mysql') dataSource: MysqlDataSource,
     @repository.getter('PropertyTypeRepository')
@@ -50,9 +52,11 @@ export class PropertyRepository extends DefaultCrudRepository<
     @repository.getter('CityRepository')
     protected cityRepositoryGetter: Getter<CityRepository>,
     @repository.getter('RequestRepository')
-    protected requestRepositoryGetter: Getter<RequestRepository>,
+    protected requestRepositoryGetter: Getter<RequestRepository>, @repository.getter('AdviserRepository') protected adviserRepositoryGetter: Getter<AdviserRepository>,
   ) {
     super(Property, dataSource);
+    this.adviser = this.createBelongsToAccessorFor('adviser', adviserRepositoryGetter,);
+    this.registerInclusionResolver('adviser', this.adviser.inclusionResolver);
     this.requests = this.createHasManyRepositoryFactoryFor(
       'requests',
       requestRepositoryGetter,

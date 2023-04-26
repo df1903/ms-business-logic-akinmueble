@@ -1,5 +1,6 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Request} from './request.model';
+import {Property} from './property.model';
 
 @model()
 export class Adviser extends Entity {
@@ -52,6 +53,9 @@ export class Adviser extends Entity {
 
   @hasMany(() => Request)
   requests: Request[];
+
+  @hasMany(() => Property)
+  properties: Property[];
 
   constructor(data?: Partial<Adviser>) {
     super(data);

@@ -5,6 +5,7 @@ import {
   model,
   property,
 } from '@loopback/repository';
+import {Adviser} from './adviser.model';
 import {City} from './city.model';
 import {Photo} from './photo.model';
 import {PropertyType} from './property-type.model';
@@ -24,6 +25,12 @@ import {Request} from './request.model';
         entity: 'PropertyType',
         entityKey: 'id',
         foreignKey: 'propertyTypeId',
+      },
+      fk_property_adviserId: {
+        name: 'fk_property_adviserId',
+        entity: 'Adviser',
+        entityKey: 'id',
+        foreignKey: 'adviserId',
       },
     },
   },
@@ -87,6 +94,9 @@ export class Property extends Entity {
 
   @hasMany(() => Request)
   requests: Request[];
+
+  @belongsTo(() => Adviser)
+  adviserId: number;
 
   constructor(data?: Partial<Property>) {
     super(data);

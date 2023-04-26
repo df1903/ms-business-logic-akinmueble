@@ -36,3 +36,5 @@ export * from './request-status-request.controller';
 export * from './request-type.controller';
 export * from './request-status.controller';
 export * from './adviser-form.controller';
+export * from './adviser-property.controller';
+export * from './property-adviser.controller';
