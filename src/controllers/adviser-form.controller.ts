@@ -133,7 +133,10 @@ export class AdviserFormController {
     data: AdviserForm,
   ): Promise<boolean> {
     let subject = 'Answer: Adviser Application';
-    let content = `Hi ${data.fullName}, <br /> Your application to be an adviser for our company Akinmueble has been ACCEPTED}`;
+    let content =
+      `Hi ${data.fullName}, <br /> ` +
+      `Your application to be an adviser for our company Akinmueble has been ACCEPTED` +
+      `<br /> <br />Your access credentials will be sent soon`;
     let contactData = {
       destinyEmail: data.email,
       destinyName: data.fullName,
