@@ -6,7 +6,7 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
   del,
@@ -21,21 +21,28 @@ import {
 } from '@loopback/rest';
 import {GeneralConfig} from '../config/general.config';
 import {SecurityConfig} from '../config/security.config';
-import {Request, RequestsByAdviserDate} from '../models';
-import {AdviserRepository, ClientRepository, PropertyRepository, RequestRepository} from '../repositories';
+import {ChangeAdviser, Request, RequestsByAdviserDate} from '../models';
+import {
+  AdviserRepository,
+  ClientRepository,
+  PropertyRepository,
+  RequestRepository,
+  RequestTypeRepository,
+} from '../repositories';
 import {NotificationsService} from '../services';
 
 export class RequestController {
-
   constructor(
     @repository(RequestRepository)
     public requestRepository: RequestRepository,
+    @repository(RequestTypeRepository)
+    public requestTypeRepository: RequestTypeRepository,
     @repository(PropertyRepository)
     public propertyRepository: PropertyRepository,
     @repository(AdviserRepository)
     public adviserRepository: AdviserRepository,
     @repository(ClientRepository)
-    public clientRepository : ClientRepository,
+    public clientRepository: ClientRepository,
     @service(NotificationsService)
     public notificationService: NotificationsService,
   ) {}
@@ -62,39 +69,47 @@ export class RequestController {
     })
     request: Omit<Request, 'id'>,
   ): Promise<Request> {
-    request.adviserId = await this.propertyRepository.findOne({
-      where: {id: request.propertyId
-      }
-    });
     //method to notify the adviser in charge about the request for their property
     let property = await this.propertyRepository.findOne({
       where: {id: request.propertyId},
     });
-    if (property){
+    if (property) {
       let adviser = await this.adviserRepository.findOne({
-        where: {id: request.adviserId},
+        where: {id: property.adviserId},
       });
       if (adviser) {
+        request.adviserId = adviser.getId();
         let client = await this.clientRepository.findOne({
-          where :{id: request.clientId}
+          where: {id: request.clientId},
         });
-        if (client){
-
-          let subject = "New real estate request"
-
-          let content = `The client ${client?.firstName} with id ${client.id} has made a request to your property `+
-         `, which has the following address ${property?.address} and `+
-         `price $${property?.salePrice}\r\n <br/ > The applicant's data `+
-         `are:<br/ >  Name: ${client?.firstName}  <br/ > FirstName: ${client?.firstLastname}  <br/ > `+
-         `Email: ${client?.email}  <br/ > Phone: ${client?.phone}`;
+        if (client) {
+          let subject = 'New real estate request';
+          let type = await this.requestTypeRepository.findOne({
+            where: {id: request.requestTypeId},
+          });
+          let price = 0.0;
+          if (request.requestTypeId == 1) {
+            price = property.salePrice;
+          } else {
+            price = property.rentalPrice;
+          }
+          let content =
+            `The client ${client?.firstName} has made a request to your property ` +
+            `<br/ ><br/ > >> Applicant's Data << ` +
+            `<br/ > Document: ${client?.document}` +
+            `<br/ > Name: ${client?.firstName}` +
+            `<br/ > Lastame: ${client?.firstLastname}` +
+            `<br/ > Email: ${client?.email}` +
+            `<br/ > Phone: ${client?.phone}` +
+            `<br/ > Type Request: ${type?.name}` +
+            `<br/ > Price: $${price}`;
 
           let data = {
-          destinyEmail: adviser.email,
-          destinyName: adviser.firstName,
-          emailSubject: subject,
-          emailBody: content,
+            destinyEmail: adviser.email,
+            destinyName: adviser.firstName,
+            emailSubject: subject,
+            emailBody: content,
           };
-
           let url = GeneralConfig.urlNotificationsEmail;
           this.notificationService.sendNotification(data, url);
         }
@@ -272,5 +287,85 @@ export class RequestController {
       include: [{relation: 'property'}],
     });
   }
-}
 
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
+  @post('/change-adviser')
+  @response(204, {
+    description: 'Adviser Change successfully',
+    content: {'application/json': {schema: getModelSchemaRef(Request)}},
+  })
+  async changeAdviser(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ChangeAdviser),
+        },
+      },
+    })
+    data: ChangeAdviser,
+  ): Promise<Request | null> {
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.requestId,
+      },
+    });
+    if (request) {
+      let adviser = await this.adviserRepository.findOne({
+        where: {
+          id: data.adviserId,
+        },
+      });
+      let adviserOriginal = await this.adviserRepository.findOne({
+        where: {
+          id: request.adviserId,
+        },
+      });
+      if (adviser) {
+        let subject = 'Alert: Adviser Changed';
+        let content =
+          `Hi ${adviserOriginal?.firstName}, <br /> ` +
+          `The request you were in charge of has been reassigned` +
+          `<br/ ><br/ > >> Request Data << ` +
+          `<br/ > Request ID: ${request?.id}` +
+          `<br/ > Client ID: ${request.clientId}` +
+          `<br/ > New Adviser ID: ${adviser.id}` +
+          `<br/ > New Adviser Name: ${adviser.firstName} ${adviser.firstLastname}`;
+        let contactData = {
+          destinyEmail: adviserOriginal?.email,
+          destinyName: adviserOriginal?.firstName,
+          emailSubject: subject,
+          emailBody: content,
+        };
+        let sent = this.notificationService.sendNotification(
+          contactData,
+          GeneralConfig.urlNotificationsEmail,
+        );
+        subject = 'Alert: Adviser Changed';
+        content =
+          `Hi ${adviser?.firstName}, <br /> ` +
+          `A request has been reassigned to you` +
+          `<br/ ><br/ > >> Request Data << ` +
+          `<br/ > Request ID: ${request?.id}` +
+          `<br/ > Client ID: ${request.clientId}` +
+          `<br/ > Old Adviser ID: ${adviserOriginal?.id}` +
+          `<br/ > Old Adviser Name: ${adviserOriginal?.firstName} ${adviserOriginal?.firstLastname}`;
+        contactData = {
+          destinyEmail: adviser.email,
+          destinyName: adviser.firstName,
+          emailSubject: subject,
+          emailBody: content,
+        };
+        sent = this.notificationService.sendNotification(
+          contactData,
+          GeneralConfig.urlNotificationsEmail,
+        );
+        await this.requestRepository.updateById(data.requestId, data);
+        return request;
+      }
+    }
+    return null;
+  }
+}

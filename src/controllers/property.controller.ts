@@ -90,6 +90,26 @@ export class PropertyController {
 
   @authenticate({
     strategy: 'auth',
+    options: [SecurityConfig.menuPropertyId, SecurityConfig.listClientAction],
+  })
+  @get('/property-c')
+  @response(200, {
+    description: 'Array of Property model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Property, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findClient(): Promise<Property[]> {
+    return this.propertyRepository.find();
+  }
+
+  @authenticate({
+    strategy: 'auth',
     options: [SecurityConfig.menuPropertyId, SecurityConfig.editAction],
   })
   @patch('/property')

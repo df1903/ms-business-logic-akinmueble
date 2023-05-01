@@ -12,6 +12,7 @@ export namespace SecurityConfig {
   export const menuPropertyTypeId = '643dd8270349685918540d82';
   export const menuRequestTypeId = '643dd8300349685918540d83';
   export const listAction = 'list';
+  export const listClientAction = 'listClient';
   export const saveAction = 'save';
   export const editAction = 'edit';
   export const deleteAction = 'delete';
