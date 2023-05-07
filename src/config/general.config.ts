@@ -6,5 +6,5 @@ export namespace GeneralConfig {
   export const urlNotifications2FA: string =
     'http://localhost:7183/Notifications/send-code-2fa';
   export const urlNotificationsEmail: string =
-    'http://localhost:7183/Notifications/send-general-email';
+    'http://localhost:7183/Notifications/send-email-general';
 }

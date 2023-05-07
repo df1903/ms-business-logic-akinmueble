@@ -16,3 +16,6 @@ export * from './request-status.model';
 export * from './adviser-form.model';
 export * from './requests-by-adviser-date.model';
 export * from './change-adviser.model';
+export * from './requests-by-adviser-request-status.model';
+export * from './change-in-study.model';
+export * from './response-request.model';

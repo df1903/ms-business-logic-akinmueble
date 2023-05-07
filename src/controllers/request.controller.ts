@@ -21,12 +21,20 @@ import {
 } from '@loopback/rest';
 import {GeneralConfig} from '../config/general.config';
 import {SecurityConfig} from '../config/security.config';
-import {ChangeAdviser, Request, RequestsByAdviserDate} from '../models';
+import {
+  ChangeAdviser,
+  ChangeInStudy,
+  Request,
+  RequestsByAdviserDate,
+  RequestsByAdviserRequestStatus,
+  ResponseRequest,
+} from '../models';
 import {
   AdviserRepository,
   ClientRepository,
   PropertyRepository,
   RequestRepository,
+  RequestStatusRepository,
   RequestTypeRepository,
 } from '../repositories';
 import {NotificationsService} from '../services';
@@ -43,6 +51,8 @@ export class RequestController {
     public adviserRepository: AdviserRepository,
     @repository(ClientRepository)
     public clientRepository: ClientRepository,
+    @repository(RequestStatusRepository)
+    public requestStatusRepository: RequestTypeRepository,
     @service(NotificationsService)
     public notificationService: NotificationsService,
   ) {}
@@ -254,7 +264,7 @@ export class RequestController {
     strategy: 'auth',
     options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
   })
-  @get('/request-by-adviser')
+  @get('/request-by-adviser-date')
   @response(200, {
     description: 'Array of Request model instances',
     content: {
@@ -283,6 +293,48 @@ export class RequestController {
           between: [data.startDate, data.endDate],
         },
         requestTypeId: 2,
+      },
+      include: [{relation: 'property'}],
+    });
+  }
+
+  /**
+   * Get list of requests from an advisor
+   * @param adviserId
+   * @param requestStatusId
+   * @returns Advisor request list
+   */
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
+  })
+  @get('/request-by-adviser-requestStatus')
+  @response(200, {
+    description: 'Array of advisor request model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Request, {includeRelations: true}),
+        },
+      },
+    },
+  })
+  async findByAdviserRequestStatus(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(RequestsByAdviserRequestStatus),
+        },
+      },
+    })
+    data: RequestsByAdviserRequestStatus,
+  ): Promise<Request[]> {
+    // Returns the requests that match the advisor id and the request status id
+    return this.requestRepository.find({
+      where: {
+        adviserId: data.adviserId,
+        requestStatusId: data.requestStatusId,
       },
       include: [{relation: 'property'}],
     });
@@ -365,6 +417,206 @@ export class RequestController {
         await this.requestRepository.updateById(data.requestId, data);
         return request;
       }
+    }
+    return null;
+  }
+
+  /**
+   * Change a request to in study
+   * @param requestId
+   * @returns Request
+   */
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
+  @post('/change-in-study')
+  @response(204, {
+    description: 'Request changes to in study',
+    content: {'application/json': {schema: getModelSchemaRef(Request)}},
+  })
+  async changeInStudy(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ChangeInStudy),
+        },
+      },
+    })
+    data: ChangeInStudy,
+  ): Promise<Request | null> {
+    // The request is obtained
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.requestId,
+      },
+    });
+
+    // The request exists its status is changed
+    if (request) {
+      request!.requestStatusId = 2;
+      await this.requestRepository.updateById(data.requestId, request);
+      return request;
+    }
+    return null;
+  }
+
+  /**
+   *
+   * @param requestId
+   * @param comment
+   * @param requestStatusId
+   * @returns
+   */
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+  })
+  @post('/response-request')
+  @response(204, {
+    description: 'Request answered',
+    content: {'application/json': {schema: getModelSchemaRef(Request)}},
+  })
+  async responseRequest(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ResponseRequest),
+        },
+      },
+    })
+    data: ResponseRequest,
+  ): Promise<Request | null> {
+    // The request that will be answered is obtained
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.requestId,
+      },
+    });
+
+    // If the request was found, it will be answered
+    if (request) {
+      // The request is updated
+      request.requestStatusId = data.requestStatusId;
+      request.comment = data.comment;
+      await this.requestRepository.updateById(data.requestId, request);
+
+      let client = await this.clientRepository.findOne({
+        where: {
+          id: request.clientId,
+        },
+      });
+
+      let status = await this.requestStatusRepository.findOne({
+        where: {
+          id: request.requestStatusId,
+        },
+      });
+      let contactData;
+      let content;
+
+      // If the request was rejected
+      if (data.requestStatusId == 3) {
+        // Notify that the request was rejected
+        content =
+          `<br>Hi ${client?.firstName} ${client?.firstLastname} <br><br> ` +
+          `Status of your request: ${status?.name}<br> <br><br> ` +
+          `<p/>${data.comment}<p/>`;
+
+        contactData = {
+          destinyEmail: client?.email,
+          destinyName: `${client?.firstName} ${client?.firstLastname}`,
+          emailSubject: 'Request response',
+          emailBody: content,
+        };
+
+        this.notificationService.sendNotification(
+          contactData,
+          GeneralConfig.urlNotificationsEmail,
+        );
+        return request;
+      }
+      // If the request was accepted
+      if (data.requestStatusId == 4 || data.requestStatusId == 5) {
+        // Notify that the request was accepted
+        let content =
+          `<br>Hi ${client?.firstName} ${client?.firstLastname} <br><br> ` +
+          `Status of your request: ${status?.name}<br> <br><br> ` +
+          `<p/>${data.comment}<p/>`;
+
+        contactData = {
+          destinyEmail: client?.email,
+          destinyName: `${client?.firstName} ${client?.firstLastname}`,
+          emailSubject: 'Request response',
+          emailBody: content,
+        };
+
+        this.notificationService.sendNotification(
+          contactData,
+          GeneralConfig.urlNotificationsEmail,
+        );
+
+        // Gets the other requests that the property has
+        let requests = await this.requestRepository.find({
+          where: {
+            or: [
+              {propertyId: request.propertyId, requestStatusId: 1},
+              {propertyId: request.propertyId, requestStatusId: 2},
+            ],
+          },
+          include: [{relation: 'client'}],
+        });
+
+        // Other requests that the property has are rejected
+        this.propertyRepository.requests(request.propertyId).patch(
+          {
+            comment: '',
+            requestStatusId: 3,
+          },
+          {
+            or: [
+              {
+                requestStatusId: 1,
+              },
+              {
+                requestStatusId: 2,
+              },
+            ],
+          },
+        );
+
+        status = await this.requestStatusRepository.findOne({
+          where: {
+            id: 3,
+          },
+        });
+
+        // Other clients are notified that their request was rejected
+        for (const req of requests) {
+          client = await this.clientRepository.findOne({
+            where: {
+              id: req.clientId,
+            },
+          });
+          content =
+            `<br>Hi ${client!.firstName}. ${client!.firstLastname} <br><br> ` +
+            `Status of your request: ${status?.name}<br> <br><br> ` +
+            `<p/>${'Your request was rejected because another one was already accepted. We invite you to look at other properties of your interest'}<p/>`;
+          contactData = {
+            destinyEmail: client?.email,
+            destinyName: `${client?.firstName} ${client?.firstLastname} ${client?.firstLastname}`,
+            emailSubject: 'Request response',
+            emailBody: content,
+          };
+          this.notificationService.sendNotification(
+            contactData,
+            GeneralConfig.urlNotificationsEmail,
+          );
+        }
+        return request;
+      }
+
+      return request;
     }
     return null;
   }
