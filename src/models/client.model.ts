@@ -50,6 +50,11 @@ export class Client extends Entity {
   })
   phone: string;
 
+  @property({
+    type: 'boolean',
+  })
+  validatedEmail: boolean;
+
   @hasMany(() => Request)
   requests: Request[];
 

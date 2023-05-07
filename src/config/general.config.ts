@@ -3,6 +3,9 @@ export namespace GeneralConfig {
   // export const clientsFilesFolder:string  ="../../files/clients";
   export const propertyField: string = 'file';
   export const imagesExtensions: string[] = ['.JPG', '.PNG', '.JPEG'];
+  export const emailSubjectVerificateEmail = 'Confirm your Email';
+  export const urlFrontHashVerification: string =
+    'http://localhost:4200/hash-verification';
   export const urlNotifications2FA: string =
     'http://localhost:7183/Notifications/send-code-2fa';
   export const urlNotificationsEmail: string =

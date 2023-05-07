@@ -19,13 +19,25 @@ export class GeneralSystemVariables extends Entity {
     type: 'string',
     required: true,
   })
-  administratorEmailContact: string;
+  creatorAdviserEmail: string;
 
   @property({
     type: 'string',
     required: true,
   })
-  administratorNameContact: string;
+  creatorAdviserName: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  administratorEmail: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  administratorName: string;
 
   constructor(data?: Partial<GeneralSystemVariables>) {
     super(data);

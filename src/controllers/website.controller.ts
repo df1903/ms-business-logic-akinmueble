@@ -24,12 +24,17 @@ export class Website {
     private variablesRepository: GeneralSystemVariablesRepository,
   ) {}
 
+  /**
+   * Form to contact the creative advisor to rent or sell a property
+   * @param ContactForm
+   * @returns sent= True or not sent = False
+   */
   @post('/contact-form')
   @response(200, {
     description: 'Sending the contact form message',
     content: {'application/json': {schema: getModelSchemaRef(ContactForm)}},
   })
-  async recoveryPassword(
+  async contactForm(
     @requestBody({
       content: {
         'application/json': {
@@ -45,10 +50,10 @@ export class Website {
       if ((await systemVariables).length == 0) {
         throw new HttpErrors[500]('No system variables to perform the process');
       }
-      let administratorEmail = systemVariables[0].administratorEmailContact;
-      let administratorName = systemVariables[0].administratorNameContact;
+      let creatorAdviserEmail = systemVariables[0].creatorAdviserEmail;
+      let creatorAdviserName = systemVariables[0].creatorAdviserName;
       let subject = 'Contact from the website';
-      let content = `Hi ${administratorName}, <br /> A contact message has been received from the website. The information is:<br /><br />
+      let content = `Hi ${creatorAdviserName}, <br /> A contact message has been received from the website. The information is:<br /><br />
       <ul>
       <li><strong>Name: </strong>${data.fullName}</li>
       <li><strong>Email: </strong>${data.email}</li>
@@ -61,8 +66,8 @@ export class Website {
       Real estate support team!!! :-)
       `;
       let contactData = {
-        destinyEmail: administratorEmail,
-        destinyName: administratorName,
+        destinyEmail: creatorAdviserEmail,
+        destinyName: creatorAdviserName,
         emailSubject: subject,
         emailBody: content,
       };

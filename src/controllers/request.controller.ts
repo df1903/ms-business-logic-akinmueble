@@ -466,7 +466,7 @@ export class RequestController {
    * @param requestId
    * @param comment
    * @param requestStatusId
-   * @returns
+   * @returns request
    */
   @authenticate({
     strategy: 'auth',
@@ -599,7 +599,7 @@ export class RequestController {
             },
           });
           content =
-            `<br>Hi ${client!.firstName}. ${client!.firstLastname} <br><br> ` +
+            `<br>Hi ${client!.firstName} ${client!.firstLastname} <br><br> ` +
             `Status of your request: ${status?.name}<br> <br><br> ` +
             `<p/>${'Your request was rejected because another one was already accepted. We invite you to look at other properties of your interest'}<p/>`;
           contactData = {

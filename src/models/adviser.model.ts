@@ -1,6 +1,6 @@
 import {Entity, hasMany, model, property} from '@loopback/repository';
-import {Request} from './request.model';
 import {Property} from './property.model';
+import {Request} from './request.model';
 
 @model()
 export class Adviser extends Entity {
@@ -50,6 +50,11 @@ export class Adviser extends Entity {
     required: true,
   })
   phone: string;
+
+  @property({
+    type: 'boolean',
+  })
+  accepted: boolean;
 
   @hasMany(() => Request)
   requests: Request[];

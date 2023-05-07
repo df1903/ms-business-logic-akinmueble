@@ -99,7 +99,7 @@ export class PropertyController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Property, {includeRelations: true}),
+          items: getModelSchemaRef(Property, {includeRelations: false}),
         },
       },
     },

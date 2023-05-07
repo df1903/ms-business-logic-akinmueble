@@ -1,5 +1,7 @@
 import {/* inject, */ BindingScope, injectable} from '@loopback/core';
 
+const generator = require('generate-password');
+
 const fetch = require('node-fetch');
 @injectable({scope: BindingScope.TRANSIENT})
 export class NotificationsService {
@@ -20,5 +22,18 @@ export class NotificationsService {
     } catch {
       return false;
     }
+  }
+
+  /**
+   * Create random password with n characters
+   * @param n password length
+   * @returns random password with n characters
+   */
+  createHash(n: number): string {
+    let password = generator.generate({
+      length: n,
+      numbers: true,
+    });
+    return password;
   }
 }
