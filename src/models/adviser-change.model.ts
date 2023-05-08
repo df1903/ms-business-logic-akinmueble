@@ -1,7 +1,7 @@
 import {Entity, model, property} from '@loopback/repository';
 
 @model()
-export class ChangeAdviser extends Entity {
+export class AdviserChange extends Entity {
   @property({
     type: 'number',
     required: true,
@@ -14,14 +14,13 @@ export class ChangeAdviser extends Entity {
   })
   adviserId: number;
 
-
-  constructor(data?: Partial<ChangeAdviser>) {
+  constructor(data?: Partial<AdviserChange>) {
     super(data);
   }
 }
 
-export interface ChangeAdviserRelations {
+export interface AdviserChangeRelations {
   // describe navigational properties here
 }
 
-export type ChangeAdviserWithRelations = ChangeAdviser & ChangeAdviserRelations;
+export type AdviserChangeWithRelations = AdviserChange & AdviserChangeRelations;

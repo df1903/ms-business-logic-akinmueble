@@ -3,11 +3,15 @@ export namespace GeneralConfig {
   // export const clientsFilesFolder:string  ="../../files/clients";
   export const propertyField: string = 'file';
   export const imagesExtensions: string[] = ['.JPG', '.PNG', '.JPEG'];
-  export const emailSubjectVerificateEmail = 'Confirm your Email';
-  export const urlFrontHashVerification: string =
-    'http://localhost:4200/hash-verification';
-  export const urlNotifications2FA: string =
-    'http://localhost:7183/Notifications/send-code-2fa';
-  export const urlNotificationsEmail: string =
-    'http://localhost:7183/Notifications/send-email-general';
+
+  // Types of requests
+  export const sale: number = 1;
+  export const rent: number = 2;
+
+  // Request statuses
+  export const Sent: number = 1;
+  export const InStudy: number = 2;
+  export const Rejected: number = 3;
+  export const AcceptedWithGuarantor: number = 4;
+  export const Accepted: number = 5;
 }

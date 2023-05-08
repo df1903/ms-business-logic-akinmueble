@@ -105,7 +105,11 @@ export class PropertyController {
     },
   })
   async findClient(): Promise<Property[]> {
-    return this.propertyRepository.find();
+    return this.propertyRepository.find({
+      where: {
+        or: [{sell: true}, {rent: true}],
+      },
+    });
   }
 
   @authenticate({

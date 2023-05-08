@@ -20,7 +20,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {GeneralConfig} from '../config/general.config';
+import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
@@ -57,69 +57,6 @@ export class ClientController {
     client: Omit<Client, 'id'>,
   ): Promise<Client> {
     return this.clientRepository.create(client);
-  }
-
-  /**
-   * Client sign up
-   * @param client
-   * @returns client created or null Email already registered
-   */
-  @post('/client-sign-up')
-  @response(200, {
-    description: 'Client model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Client)}},
-  })
-  async clientSignUp(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Client, {
-            title: 'NewClient',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    client: Omit<Client, 'id'>,
-  ): Promise<Client | undefined> {
-    // Verify if the email is already registered
-    let emailExists = await this.clientRepository.findOne({
-      where: {
-        email: client.email,
-      },
-    });
-
-    try {
-      if (emailExists != null) {
-        throw new HttpErrors[400]('Email already registered');
-      }
-
-      // Client invalid at the moment
-      client.validatedEmail = false;
-
-      // Generate and send hash code to validate the mail
-      let hash = this.notificationService.createHash(100);
-
-      // Send verification email
-      let link = `<a href="${GeneralConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;
-      let data = {
-        destinyEmail: client.email,
-        destinyName: `${client.firstName} ${client.firstLastname}`,
-        emailBody:
-          `Click on the following link to verify your email <br/ > <br/ >` +
-          `<br/ >${link}`,
-        emailSubject: GeneralConfig.emailSubjectVerificateEmail,
-      };
-
-      let url = GeneralConfig.urlNotifications2FA;
-      this.notificationService.sendNotification(data, url);
-
-      // Create client
-      return this.clientRepository.create(client);
-    } catch (err) {
-      err;
-    }
-    return undefined;
   }
 
   @authenticate({
@@ -246,5 +183,72 @@ export class ClientController {
   })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.clientRepository.deleteById(id);
+  }
+
+  /**
+   * CUSTOM METHODS
+   */
+
+  /**
+   * Client sign up
+   * @param client
+   * @returns client created or null Email already registered
+   */
+  @post('/client-sign-up')
+  @response(200, {
+    description: 'Client model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Client)}},
+  })
+  async clientSignUp(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Client, {
+            title: 'NewClient',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    client: Omit<Client, 'id'>,
+  ): Promise<Client | undefined> {
+    // Verify if the email is already registered
+    let emailExists = await this.clientRepository.findOne({
+      where: {
+        email: client.email,
+      },
+    });
+
+    try {
+      if (emailExists != null) {
+        throw new HttpErrors[400]('Email already registered');
+      }
+
+      // Client invalid at the moment
+      client.validatedEmail = false;
+
+      // Generate and send hash code to validate the mail
+      let hash = this.notificationService.createHash(100);
+
+      // Send verification email
+      let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;
+      let data = {
+        destinyEmail: client.email,
+        destinyName: `${client.firstName} ${client.firstLastname}`,
+        emailBody:
+          `Click on the following link to verify your email <br/ > <br/ >` +
+          `<br/ >${link}`,
+        emailSubject: NotificationsConfig.emailSubjectVerificateEmail,
+      };
+
+      let url = NotificationsConfig.urlNotifications2FA;
+      this.notificationService.sendNotification(data, url);
+
+      // Create client
+      return this.clientRepository.create(client);
+    } catch (err) {
+      err;
+    }
+    return undefined;
   }
 }

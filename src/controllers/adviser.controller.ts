@@ -20,7 +20,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {GeneralConfig} from '../config/general.config';
+import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {
   Adviser,
@@ -66,77 +66,6 @@ export class AdviserController {
     adviser: Omit<Adviser, 'id'>,
   ): Promise<Adviser> {
     return this.adviserRepository.create(adviser);
-  }
-
-  /**
-   * Adviser sign up
-   * @param adviser
-   * @returns advisor created or null Email already registered
-   */
-  @post('/advisor-sign-up')
-  @response(200, {
-    description: 'Adviser model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Adviser)}},
-  })
-  async advisorSignUp(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Adviser, {
-            title: 'NewAdviser',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    adviser: Omit<Adviser, 'id'>,
-  ): Promise<Adviser | undefined> {
-    // Verify if the email is already registered
-    let emailExists = await this.adviserRepository.findOne({
-      where: {
-        email: adviser.email,
-      },
-    });
-    try {
-      if (emailExists != null) {
-        throw new HttpErrors[400]('Email already registered');
-      }
-
-      // Adviser invalid at the moment
-      adviser.accepted = false;
-
-      // Notify the administrator of a new request to adviser
-      let systemVariables: GeneralSystemVariables[] =
-        await this.variablesRepository.find();
-      if ((await systemVariables).length == 0) {
-        throw new HttpErrors[500]('No system variables to perform the process');
-      }
-      let administratorEmail = systemVariables[0].administratorEmail;
-      let administratorName = systemVariables[0].administratorName;
-      let subject = 'Application for the position of real estate advisor.';
-      let content = `Hi ${administratorName}, <br /> A contact message has been received from the website. The information is:
-      <br /><br />
-      Name: ${adviser.firstName} ${adviser.secondName}<br />
-      Document: ${adviser.document}<br />
-      Email: ${adviser.email}<br />
-      Phone: ${adviser.phone}<br />
-      Message type: Request for new adviser
-      `;
-      let contactData = {
-        destinyEmail: administratorEmail,
-        destinyName: administratorName,
-        emailSubject: subject,
-        emailBody: content,
-      };
-      let sent = this.notificationService.sendNotification(
-        contactData,
-        GeneralConfig.urlNotificationsEmail,
-      );
-      return this.adviserRepository.create(adviser);
-    } catch (err) {
-      err;
-    }
-    return undefined;
   }
 
   @authenticate({
@@ -272,6 +201,77 @@ export class AdviserController {
    */
 
   /**
+   * Adviser sign up
+   * @param adviser
+   * @returns advisor created or null Email already registered
+   */
+  @post('/advisor-sign-up')
+  @response(200, {
+    description: 'Adviser model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Adviser)}},
+  })
+  async advisorSignUp(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Adviser, {
+            title: 'NewAdviser',
+            exclude: ['id'],
+          }),
+        },
+      },
+    })
+    adviser: Omit<Adviser, 'id'>,
+  ): Promise<Adviser | undefined> {
+    // Verify if the email is already registered
+    let emailExists = await this.adviserRepository.findOne({
+      where: {
+        email: adviser.email,
+      },
+    });
+    try {
+      if (emailExists != null) {
+        throw new HttpErrors[400]('Email already registered');
+      }
+
+      // Adviser invalid at the moment
+      adviser.accepted = false;
+
+      // Notify the administrator of a new request to adviser
+      let systemVariables: GeneralSystemVariables[] =
+        await this.variablesRepository.find();
+      if ((await systemVariables).length == 0) {
+        throw new HttpErrors[500]('No system variables to perform the process');
+      }
+      let administratorEmail = systemVariables[0].administratorEmail;
+      let administratorName = systemVariables[0].administratorName;
+      let subject = 'Application for the position of real estate advisor.';
+      let content = `Hi ${administratorName}, <br /> A contact message has been received from the website. The information is:
+      <br /><br />
+      Name: ${adviser.firstName} ${adviser.secondName}<br />
+      Document: ${adviser.document}<br />
+      Email: ${adviser.email}<br />
+      Phone: ${adviser.phone}<br />
+      Message type: Request for new adviser
+      `;
+      let contactData = {
+        destinyEmail: administratorEmail,
+        destinyName: administratorName,
+        emailSubject: subject,
+        emailBody: content,
+      };
+      let sent = this.notificationService.sendNotification(
+        contactData,
+        NotificationsConfig.urlNotificationsEmail,
+      );
+      return this.adviserRepository.create(adviser);
+    } catch (err) {
+      err;
+    }
+    return undefined;
+  }
+
+  /**
    * Administrator's response to a request for a new adviser
    * @param response
    * @returns Request response
@@ -279,7 +279,7 @@ export class AdviserController {
   @post('/adviser-request-response')
   @response(200, {
     description: 'Adviser model instance',
-    content: 'Request response',
+    content: {'application/json': {schema: getModelSchemaRef(Adviser)}},
   })
   async AdviserRequestResponse(
     @requestBody({
@@ -309,7 +309,7 @@ export class AdviserController {
         };
         this.notificationService.sendNotification(
           contactData,
-          GeneralConfig.urlNotificationsEmail,
+          NotificationsConfig.urlNotificationsEmail,
         );
         // Delete
         return await this.adviserRepository.deleteById(response.adviserId);

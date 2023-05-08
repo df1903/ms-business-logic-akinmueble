@@ -20,9 +20,10 @@ import {
   response,
 } from '@loopback/rest';
 import {GeneralConfig} from '../config/general.config';
+import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {
-  ChangeAdviser,
+  AdviserChange,
   ChangeInStudy,
   Request,
   RequestsByAdviserDate,
@@ -98,7 +99,7 @@ export class RequestController {
             where: {id: request.requestTypeId},
           });
           let price = 0.0;
-          if (request.requestTypeId == 1) {
+          if (request.requestTypeId == GeneralConfig.sale) {
             price = property.salePrice;
           } else {
             price = property.rentalPrice;
@@ -120,7 +121,7 @@ export class RequestController {
             emailSubject: subject,
             emailBody: content,
           };
-          let url = GeneralConfig.urlNotificationsEmail;
+          let url = NotificationsConfig.urlNotificationsEmail;
           this.notificationService.sendNotification(data, url);
         }
       }
@@ -260,6 +261,11 @@ export class RequestController {
    * CUSTOM METHODS
    */
 
+  /**
+   * Get requests accepted for a love in a time range
+   * @param RequestsByAdviserDate
+   * @returns Request[]>
+   */
   @authenticate({
     strategy: 'auth',
     options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
@@ -292,7 +298,7 @@ export class RequestController {
         date: {
           between: [data.startDate, data.endDate],
         },
-        requestTypeId: 2,
+        requestStatusId: GeneralConfig.Accepted,
       },
       include: [{relation: 'property'}],
     });
@@ -340,11 +346,16 @@ export class RequestController {
     });
   }
 
+  /**
+   * Changes the adviser of a request and notifies them
+   * @param AdviserChange
+   * @returns Request
+   */
   @authenticate({
     strategy: 'auth',
     options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
   })
-  @post('/change-adviser')
+  @post('/adviser-change')
   @response(204, {
     description: 'Adviser Change successfully',
     content: {'application/json': {schema: getModelSchemaRef(Request)}},
@@ -353,11 +364,11 @@ export class RequestController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(ChangeAdviser),
+          schema: getModelSchemaRef(AdviserChange),
         },
       },
     })
-    data: ChangeAdviser,
+    data: AdviserChange,
   ): Promise<Request | null> {
     let request = await this.requestRepository.findOne({
       where: {
@@ -365,56 +376,28 @@ export class RequestController {
       },
     });
     if (request) {
-      let adviser = await this.adviserRepository.findOne({
+      let newAdviser = await this.adviserRepository.findOne({
         where: {
           id: data.adviserId,
         },
       });
-      let adviserOriginal = await this.adviserRepository.findOne({
+      let originalAdviser = await this.adviserRepository.findOne({
         where: {
           id: request.adviserId,
         },
       });
-      if (adviser) {
-        let subject = 'Alert: Adviser Changed';
-        let content =
-          `Hi ${adviserOriginal?.firstName}, <br /> ` +
-          `The request you were in charge of has been reassigned` +
-          `<br/ ><br/ > >> Request Data << ` +
-          `<br/ > Request ID: ${request?.id}` +
-          `<br/ > Client ID: ${request.clientId}` +
-          `<br/ > New Adviser ID: ${adviser.id}` +
-          `<br/ > New Adviser Name: ${adviser.firstName} ${adviser.firstLastname}`;
-        let contactData = {
-          destinyEmail: adviserOriginal?.email,
-          destinyName: adviserOriginal?.firstName,
-          emailSubject: subject,
-          emailBody: content,
+
+      if (newAdviser && originalAdviser) {
+        request.adviserId = data.adviserId;
+
+        let info = {
+          request: request,
+          newAdviser: newAdviser,
+          originalAdviser: originalAdviser,
         };
-        let sent = this.notificationService.sendNotification(
-          contactData,
-          GeneralConfig.urlNotificationsEmail,
-        );
-        subject = 'Alert: Adviser Changed';
-        content =
-          `Hi ${adviser?.firstName}, <br /> ` +
-          `A request has been reassigned to you` +
-          `<br/ ><br/ > >> Request Data << ` +
-          `<br/ > Request ID: ${request?.id}` +
-          `<br/ > Client ID: ${request.clientId}` +
-          `<br/ > Old Adviser ID: ${adviserOriginal?.id}` +
-          `<br/ > Old Adviser Name: ${adviserOriginal?.firstName} ${adviserOriginal?.firstLastname}`;
-        contactData = {
-          destinyEmail: adviser.email,
-          destinyName: adviser.firstName,
-          emailSubject: subject,
-          emailBody: content,
-        };
-        sent = this.notificationService.sendNotification(
-          contactData,
-          GeneralConfig.urlNotificationsEmail,
-        );
-        await this.requestRepository.updateById(data.requestId, data);
+        this.notificationService.emailAdviserChange(info);
+
+        await this.requestRepository.updateById(data.requestId, request);
         return request;
       }
     }
@@ -454,7 +437,7 @@ export class RequestController {
 
     // The request exists its status is changed
     if (request) {
-      request!.requestStatusId = 2;
+      request!.requestStatusId = GeneralConfig.InStudy;
       await this.requestRepository.updateById(data.requestId, request);
       return request;
     }
@@ -512,109 +495,15 @@ export class RequestController {
           id: request.requestStatusId,
         },
       });
-      let contactData;
-      let content;
 
-      // If the request was rejected
-      if (data.requestStatusId == 3) {
-        // Notify that the request was rejected
-        content =
-          `<br>Hi ${client?.firstName} ${client?.firstLastname} <br><br> ` +
-          `Status of your request: ${status?.name}<br> <br><br> ` +
-          `<p/>${data.comment}<p/>`;
+      // Notify response to the request
+      let info = {
+        client: client,
+        status: status,
+        comment: data.comment,
+      };
 
-        contactData = {
-          destinyEmail: client?.email,
-          destinyName: `${client?.firstName} ${client?.firstLastname}`,
-          emailSubject: 'Request response',
-          emailBody: content,
-        };
-
-        this.notificationService.sendNotification(
-          contactData,
-          GeneralConfig.urlNotificationsEmail,
-        );
-        return request;
-      }
-      // If the request was accepted
-      if (data.requestStatusId == 4 || data.requestStatusId == 5) {
-        // Notify that the request was accepted
-        let content =
-          `<br>Hi ${client?.firstName} ${client?.firstLastname} <br><br> ` +
-          `Status of your request: ${status?.name}<br> <br><br> ` +
-          `<p/>${data.comment}<p/>`;
-
-        contactData = {
-          destinyEmail: client?.email,
-          destinyName: `${client?.firstName} ${client?.firstLastname}`,
-          emailSubject: 'Request response',
-          emailBody: content,
-        };
-
-        this.notificationService.sendNotification(
-          contactData,
-          GeneralConfig.urlNotificationsEmail,
-        );
-
-        // Gets the other requests that the property has
-        let requests = await this.requestRepository.find({
-          where: {
-            or: [
-              {propertyId: request.propertyId, requestStatusId: 1},
-              {propertyId: request.propertyId, requestStatusId: 2},
-            ],
-          },
-          include: [{relation: 'client'}],
-        });
-
-        // Other requests that the property has are rejected
-        this.propertyRepository.requests(request.propertyId).patch(
-          {
-            comment: '',
-            requestStatusId: 3,
-          },
-          {
-            or: [
-              {
-                requestStatusId: 1,
-              },
-              {
-                requestStatusId: 2,
-              },
-            ],
-          },
-        );
-
-        status = await this.requestStatusRepository.findOne({
-          where: {
-            id: 3,
-          },
-        });
-
-        // Other clients are notified that their request was rejected
-        for (const req of requests) {
-          client = await this.clientRepository.findOne({
-            where: {
-              id: req.clientId,
-            },
-          });
-          content =
-            `<br>Hi ${client!.firstName} ${client!.firstLastname} <br><br> ` +
-            `Status of your request: ${status?.name}<br> <br><br> ` +
-            `<p/>${'Your request was rejected because another one was already accepted. We invite you to look at other properties of your interest'}<p/>`;
-          contactData = {
-            destinyEmail: client?.email,
-            destinyName: `${client?.firstName} ${client?.firstLastname} ${client?.firstLastname}`,
-            emailSubject: 'Request response',
-            emailBody: content,
-          };
-          this.notificationService.sendNotification(
-            contactData,
-            GeneralConfig.urlNotificationsEmail,
-          );
-        }
-        return request;
-      }
+      this.notificationService.emailRequestResponse(info);
 
       return request;
     }
