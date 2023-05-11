@@ -74,6 +74,11 @@ export class Request extends Entity {
   })
   comment: string;
 
+  @property({
+    type: 'date',
+  })
+  endOfRent: string;
+
   @belongsTo(() => Adviser)
   adviserId: number;
 

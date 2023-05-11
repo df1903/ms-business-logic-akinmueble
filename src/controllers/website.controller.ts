@@ -14,9 +14,9 @@ export class Website {
   ) {}
 
   /**
-   * Form to contact the creative advisor to rent or sell a property
+   * Form to contact the administrator to rent or sell a property
    * @param ContactForm
-   * @returns sent= True or not sent = False
+   * @returns message sent = True or message not sent = False
    */
   @post('/contact-form')
   @response(200, {

@@ -1,18 +1,20 @@
 import {authenticate} from '@loopback/authentication';
-import {service} from '@loopback/core';
+import {inject, service} from '@loopback/core';
 import {
   Count,
   CountSchema,
   Filter,
   FilterExcludingWhere,
-  repository,
   Where,
+  repository,
 } from '@loopback/repository';
 import {
+  HttpErrors,
+  Request,
+  RestBindings,
   del,
   get,
   getModelSchemaRef,
-  HttpErrors,
   param,
   patch,
   post,
@@ -20,18 +22,14 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {NotificationsConfig} from '../config/notifications.config';
+import parseBearerToken from 'parse-bearer-token';
 import {SecurityConfig} from '../config/security.config';
-import {
-  Adviser,
-  AdviserRequestResponse,
-  GeneralSystemVariables,
-} from '../models';
+import {Adviser, AdviserRequestResponse} from '../models';
 import {
   AdviserRepository,
   GeneralSystemVariablesRepository,
 } from '../repositories';
-import {NotificationsService} from '../services';
+import {NotificationsService, SecurityService} from '../services';
 
 export class AdviserController {
   constructor(
@@ -41,6 +39,9 @@ export class AdviserController {
     private notificationService: NotificationsService,
     @repository(GeneralSystemVariablesRepository)
     private variablesRepository: GeneralSystemVariablesRepository,
+    @service(SecurityService)
+    private securityService: SecurityService,
+    @inject(RestBindings.Http.REQUEST) private req: Request,
   ) {}
 
   @authenticate({
@@ -229,53 +230,32 @@ export class AdviserController {
         email: adviser.email,
       },
     });
+
     try {
       if (emailExists != null) {
         throw new HttpErrors[400]('Email already registered');
       }
-
-      // Adviser invalid at the moment
-      adviser.accepted = false;
+      // accepted = undefined =sent
+      adviser.accepted = undefined;
 
       // Notify the administrator of a new request to adviser
-      let systemVariables: GeneralSystemVariables[] =
-        await this.variablesRepository.find();
-      if ((await systemVariables).length == 0) {
-        throw new HttpErrors[500]('No system variables to perform the process');
-      }
-      let administratorEmail = systemVariables[0].administratorEmail;
-      let administratorName = systemVariables[0].administratorName;
-      let subject = 'Application for the position of real estate advisor.';
-      let content = `Hi ${administratorName}, <br /> A contact message has been received from the website. The information is:
-      <br /><br />
-      Name: ${adviser.firstName} ${adviser.secondName}<br />
-      Document: ${adviser.document}<br />
-      Email: ${adviser.email}<br />
-      Phone: ${adviser.phone}<br />
-      Message type: Request for new adviser
-      `;
-      let contactData = {
-        destinyEmail: administratorEmail,
-        destinyName: administratorName,
-        emailSubject: subject,
-        emailBody: content,
-      };
-      let sent = this.notificationService.sendNotification(
-        contactData,
-        NotificationsConfig.urlNotificationsEmail,
-      );
+      this.notificationService.emailNewAdviserSignUp(adviser);
+
       return this.adviserRepository.create(adviser);
     } catch (err) {
-      err;
+      return undefined;
     }
-    return undefined;
   }
 
   /**
    * Administrator's response to a request for a new adviser
    * @param response
-   * @returns Request response
+   * @returns Boolean
    */
+  @authenticate({
+    strategy: 'auth',
+    options: [SecurityConfig.menuAdviserId, SecurityConfig.createAction],
+  })
   @post('/adviser-request-response')
   @response(200, {
     description: 'Adviser model instance',
@@ -290,37 +270,33 @@ export class AdviserController {
       },
     })
     response: AdviserRequestResponse,
-  ): Promise<void | Boolean> {
-    // Obtain the applicant's data
-    let adviser = await this.adviserRepository.findOne({
-      where: {id: response.adviserId},
-    });
-    if (adviser) {
-      // The advisor's request is rejected
-      if (!response.accepted) {
-        // Notify
-        let subject = 'Response: Adviser Application';
-        let content = `Hi ${adviser?.firstName}  ${adviser?.firstLastname}, <br /> Your application to be an adviser for our company Akinmueble has been rejected`;
-        let contactData = {
-          destinyEmail: adviser?.email,
-          destinyName: `${adviser?.firstName}  ${adviser?.firstLastname}`,
-          emailSubject: subject,
-          emailBody: content,
-        };
-        this.notificationService.sendNotification(
-          contactData,
-          NotificationsConfig.urlNotificationsEmail,
-        );
-        // Delete
-        return await this.adviserRepository.deleteById(response.adviserId);
+  ): Promise<boolean> {
+    try {
+      // Obtain the applicant's data
+      let adviser = await this.adviserRepository.findOne({
+        where: {id: response.adviserId},
+      });
+      if (adviser) {
+        if (!response.accepted) {
+          // The advisor's request is rejected
+          adviser.accepted = false;
+          // Notify advisor requester
+          this.notificationService.emailRequestResponse(adviser);
+        } else {
+          // The advisor's request is accepted
+          adviser.accepted = true;
+          // Create the logical user with credentials
+          let token = parseBearerToken(this.req);
+          if (token) {
+            this.securityService.createAdvisor(adviser, token);
+          }
+        }
+        this.adviserRepository.updateById(response.adviserId, adviser);
+        return true;
       }
-
-      // The advisor's request is accepted
-      adviser!.accepted = true;
-      await this.adviserRepository.updateById(response.adviserId, adviser);
-
-      // Method that connects and creates the advisor in ms-security as a user with advisor role. Also send the credentials by mail
+    } catch (err) {
+      console.log('The request does not exist');
     }
-    console.log('The request does not exist');
+    return false;
   }
 }

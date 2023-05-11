@@ -1,8 +1,6 @@
 export * from '../models';
-export * from './adviser-change.model';
 export * from './adviser.model';
 export * from './advisor-request-response.model';
-export * from './change-in-study.model';
 export * from './city.model';
 export * from './client.model';
 export * from './contact-form.model';
@@ -17,5 +15,3 @@ export * from './request-status.model';
 export * from './request-type.model';
 export * from './request.model';
 export * from './requests-by-adviser-date.model';
-export * from './requests-by-adviser-request-status.model';
-export * from './response-request.model';

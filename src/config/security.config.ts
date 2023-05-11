@@ -4,6 +4,8 @@ export namespace SecurityConfig {
   export const hostMysql = process.env.HOST_STRING_MYSQL;
   export const passwordMysql = process.env.PASSWORD_MYSQL;
   export const nameDatabase = process.env.NAME_DATABASE;
+  // Roles
+  export const adviserRole = '643c8b6611b852318822326a';
   // Menu id
   export const menuPropertyId = '642ce496db8a5109ec877cdb';
   export const menuRequestId = '643dd7c10349685918540d80';
@@ -25,4 +27,6 @@ export namespace SecurityConfig {
   export const deleteAction = 'delete';
   export const downloadAction = 'download';
   export const createAction = 'create';
+  // Url
+  export const createUser: string = 'http://localhost:3001//user';
 }

@@ -22,14 +22,7 @@ import {
 import {GeneralConfig} from '../config/general.config';
 import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
-import {
-  AdviserChange,
-  ChangeInStudy,
-  Request,
-  RequestsByAdviserDate,
-  RequestsByAdviserRequestStatus,
-  ResponseRequest,
-} from '../models';
+import {Client, Request, RequestsByAdviserDate} from '../models';
 import {
   AdviserRepository,
   ClientRepository,
@@ -262,7 +255,7 @@ export class RequestController {
    */
 
   /**
-   * Get requests accepted for a love in a time range
+   * Get accepted request for an adviser in a time range
    * @param RequestsByAdviserDate
    * @returns Request[]>
    */
@@ -307,7 +300,7 @@ export class RequestController {
   /**
    * Get list of requests from an advisor
    * @param adviserId
-   * @param requestStatusId
+   * @param Request
    * @returns Advisor request list
    */
   @authenticate({
@@ -330,11 +323,11 @@ export class RequestController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(RequestsByAdviserRequestStatus),
+          schema: getModelSchemaRef(Request),
         },
       },
     })
-    data: RequestsByAdviserRequestStatus,
+    data: Request,
   ): Promise<Request[]> {
     // Returns the requests that match the advisor id and the request status id
     return this.requestRepository.find({
@@ -347,8 +340,78 @@ export class RequestController {
   }
 
   /**
+   * Get list of requests from a client
+   * @param data
+   * @returns Client request list
+   */
+  @get('/request-by-client')
+  @response(200, {
+    description: 'Array of client request model instances',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'array',
+          items: getModelSchemaRef(Request, {includeRelations: false}),
+        },
+      },
+    },
+  })
+  async findByClientRequest(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Client),
+        },
+      },
+    })
+    data: Client,
+  ): Promise<Request[]> {
+    return this.requestRepository.find({
+      where: {
+        clientId: data.id,
+      },
+    });
+  }
+
+  /**
+   * Cancel request from a client when it is in sent
+   * @param Request
+   * @returns Boolean
+   */
+  @post('/cancel-client-request')
+  @response(204, {
+    description: 'successfully canceled',
+    content: {'application/json': {schema: getModelSchemaRef(Request)}},
+  })
+  async cancelClientRequest(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Request),
+        },
+      },
+    })
+    data: Request,
+  ): Promise<Boolean> {
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.id,
+        clientId: data.clientId,
+      },
+    });
+    if (request) {
+      if (request.requestStatusId == GeneralConfig.Sent) {
+        await this.requestRepository.deleteById(data.id);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
    * Changes the adviser of a request and notifies them
-   * @param AdviserChange
+   * @param Request
    * @returns Request
    */
   @authenticate({
@@ -360,19 +423,19 @@ export class RequestController {
     description: 'Adviser Change successfully',
     content: {'application/json': {schema: getModelSchemaRef(Request)}},
   })
-  async changeAdviser(
+  async AdviserChange(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(AdviserChange),
+          schema: getModelSchemaRef(Request),
         },
       },
     })
-    data: AdviserChange,
+    data: Request,
   ): Promise<Request | null> {
     let request = await this.requestRepository.findOne({
       where: {
-        id: data.requestId,
+        id: data.id,
       },
     });
     if (request) {
@@ -397,7 +460,7 @@ export class RequestController {
         };
         this.notificationService.emailAdviserChange(info);
 
-        await this.requestRepository.updateById(data.requestId, request);
+        await this.requestRepository.updateById(data.id, request);
         return request;
       }
     }
@@ -422,23 +485,23 @@ export class RequestController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(ChangeInStudy),
+          schema: getModelSchemaRef(Request),
         },
       },
     })
-    data: ChangeInStudy,
+    data: Request,
   ): Promise<Request | null> {
     // The request is obtained
     let request = await this.requestRepository.findOne({
       where: {
-        id: data.requestId,
+        id: data.id,
       },
     });
 
     // The request exists its status is changed
     if (request) {
       request!.requestStatusId = GeneralConfig.InStudy;
-      await this.requestRepository.updateById(data.requestId, request);
+      await this.requestRepository.updateById(data.id, request);
       return request;
     }
     return null;
@@ -464,16 +527,16 @@ export class RequestController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(ResponseRequest),
+          schema: getModelSchemaRef(Request),
         },
       },
     })
-    data: ResponseRequest,
+    data: Request,
   ): Promise<Request | null> {
     // The request that will be answered is obtained
     let request = await this.requestRepository.findOne({
       where: {
-        id: data.requestId,
+        id: data.id,
       },
     });
 
@@ -482,7 +545,7 @@ export class RequestController {
       // The request is updated
       request.requestStatusId = data.requestStatusId;
       request.comment = data.comment;
-      await this.requestRepository.updateById(data.requestId, request);
+      await this.requestRepository.updateById(data.id, request);
 
       let client = await this.clientRepository.findOne({
         where: {
@@ -505,8 +568,12 @@ export class RequestController {
 
       this.notificationService.emailRequestResponse(info);
 
+      // Contrato
       return request;
     }
     return null;
   }
+
+  //crear codeodor
+  //crear contrato
 }

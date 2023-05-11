@@ -2,10 +2,7 @@ import {/* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
 import {NotificationsConfig} from '../config/notifications.config';
-import {GeneralSystemVariables} from '../models';
 import {GeneralSystemVariablesRepository} from '../repositories';
-
-const generator = require('generate-password');
 
 const fetch = require('node-fetch');
 @injectable({scope: BindingScope.TRANSIENT})
@@ -97,49 +94,72 @@ export class NotificationsService {
   /**
    * Method to send email when a response to a request is given
    * @param data
-   * @returns
    */
-  emailRequestResponse(data: any): Boolean {
+  emailRequestResponse(data: any) {
+    let content = `Hi ${data.firstName}  ${data.firstLastname}, <br />
+    Your application to be an adviser for our company Akinmueble has been rejected`;
+    let contactData = {
+      destinyEmail: data.email,
+      destinyName: `${data.firstName}  ${data?.firstLastname}`,
+      emailSubject: NotificationsConfig.emailSubjectAdviserSignUpResponse,
+      emailBody: content,
+    };
+    this.sendNotification(
+      contactData,
+      NotificationsConfig.urlNotificationsEmail,
+    );
+  }
+  async emailNewAdviserSignUp(data: any) {
     try {
-      let content =
-        `<br>Hi ${data.client?.firstName} ${data.client?.firstLastname} <br><br> ` +
-        `Status of your request: ${data.status?.name}<br> <br><br> ` +
-        `<p/>${data.comment}<p/>`;
+      // Get admin contact details
+      let systemVariables = await this.variablesRepository.findOne({
+        where: {
+          id: 1,
+        },
+      });
 
+      let content = `Hi ${systemVariables?.administratorName}, <br />A new adviser registration request has been received. The information is:
+      <br /><br />
+      Name: ${data.firstName} ${data.firstLastname}<br />
+      Document: ${data.document}<br />
+      Email: ${data.email}<br />
+      Phone: ${data.phone}<br />
+      Message type: Request for new adviser
+      `;
       let contactData = {
-        destinyEmail: data.client?.email,
-        destinyName: `${data.client?.firstName} ${data.client?.firstLastname}`,
-        emailSubject: NotificationsConfig.emailSubjectRequestResponse,
+        destinyEmail: systemVariables?.administratorEmail,
+        destinyName: systemVariables?.administratorName,
+        emailSubject: NotificationsConfig.emailSubjectNewAdviserSignUp,
         emailBody: content,
       };
-
-      this.sendNotification(
+      let sent = this.sendNotification(
         contactData,
         NotificationsConfig.urlNotificationsEmail,
       );
-      return true;
+      return sent;
     } catch (err) {
-      console.log(err);
       return false;
     }
   }
-
   /**
-   * Method to send an email to the creator adviser when you want to rent or sell a property
+   * Method to email the administrator when you want to rent or sell a property
    * @param data
    * @returns Boolean
    */
   async emailPublicForm(data: any): Promise<boolean> {
     try {
-      let systemVariables: GeneralSystemVariables[] =
-        await this.variablesRepository.find();
-      if ((await systemVariables).length == 0) {
+      // Get admin contact details
+      let systemVariables = await this.variablesRepository.findOne({
+        where: {
+          id: 1,
+        },
+      });
+      if (!systemVariables) {
         throw new HttpErrors[500]('No system variables to perform the process');
       }
-      let creatorAdviserEmail = data.systemVariables[0].creatorAdviserEmail;
-      let creatorAdviserName = data.systemVariables[0].creatorAdviserName;
+
       let subject = 'Contact from the website';
-      let content = `Hi ${creatorAdviserName}, <br /> A contact message has been received from the website. The information is:<br /><br />
+      let content = `Hi ${systemVariables.administratorName}, <br /> A contact message has been received from the website. The information is:<br /><br />
       <ul>
       <li><strong>Name: </strong>${data.fullName}</li>
       <li><strong>Email: </strong>${data.email}</li>
@@ -152,8 +172,8 @@ export class NotificationsService {
       Real estate support team!!! :-)
       `;
       let contactData = {
-        destinyEmail: creatorAdviserEmail,
-        destinyName: creatorAdviserName,
+        destinyEmail: systemVariables.administratorEmail,
+        destinyName: systemVariables.administratorName,
         emailSubject: subject,
         emailBody: content,
       };
@@ -163,21 +183,7 @@ export class NotificationsService {
       );
       return sent;
     } catch (err) {
-      throw new HttpErrors[500]('Server error when sending message');
       return false;
     }
-  }
-
-  /**
-   * Create random text with n characters
-   * @param n password length
-   * @returns random password with n characters
-   */
-  createHash(n: number): string {
-    let password = generator.generate({
-      length: n,
-      numbers: true,
-    });
-    return password;
   }
 }

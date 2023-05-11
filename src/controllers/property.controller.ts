@@ -88,28 +88,26 @@ export class PropertyController {
     return this.propertyRepository.find(filter);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuPropertyId, SecurityConfig.listClientAction],
-  })
-  @get('/property-c')
+  // @authenticate({
+  //   strategy: 'auth',
+  //   options: [SecurityConfig.menuPropertyId, SecurityConfig.listClientAction],
+  // })
+  @get('/public-property')
   @response(200, {
     description: 'Array of Property model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Property, {includeRelations: false}),
+          items: getModelSchemaRef(Property, {includeRelations: true}),
         },
       },
     },
   })
-  async findClient(): Promise<Property[]> {
-    return this.propertyRepository.find({
-      where: {
-        or: [{sell: true}, {rent: true}],
-      },
-    });
+  async findClient(
+    @param.filter(Property) filter?: Filter<Property>,
+  ): Promise<Property[]> {
+    return this.propertyRepository.find(filter);
   }
 
   @authenticate({

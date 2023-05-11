@@ -54,7 +54,7 @@ export class Adviser extends Entity {
   @property({
     type: 'boolean',
   })
-  accepted: boolean;
+  accepted?: boolean;
 
   @hasMany(() => Request)
   requests: Request[];

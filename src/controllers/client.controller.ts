@@ -24,7 +24,7 @@ import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {Client} from '../models';
 import {ClientRepository} from '../repositories';
-import {NotificationsService} from '../services';
+import {NotificationsService, SecurityService} from '../services';
 
 export class ClientController {
   constructor(
@@ -32,6 +32,8 @@ export class ClientController {
     public clientRepository: ClientRepository,
     @service(NotificationsService)
     private notificationService: NotificationsService,
+    @service(SecurityService)
+    private securityService: SecurityService,
   ) {}
 
   @authenticate({
@@ -228,7 +230,8 @@ export class ClientController {
       client.validatedEmail = false;
 
       // Generate and send hash code to validate the mail
-      let hash = this.notificationService.createHash(100);
+      let hash = this.securityService.createHash(100);
+      client.codigoHash = hash;
 
       // Send verification email
       let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;

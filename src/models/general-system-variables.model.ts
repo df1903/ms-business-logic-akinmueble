@@ -19,18 +19,6 @@ export class GeneralSystemVariables extends Entity {
     type: 'string',
     required: true,
   })
-  creatorAdviserEmail: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  creatorAdviserName: string;
-
-  @property({
-    type: 'string',
-    required: true,
-  })
   administratorEmail: string;
 
   @property({

@@ -3,6 +3,9 @@ export namespace NotificationsConfig {
   export const emailSubjectVerificateEmail = 'Confirm your Email';
   export const emailSubjectAdviserChange = 'Alert: Adviser Changed';
   export const emailSubjectRequestResponse = 'Request response';
+  export const emailSubjectNewAdviserSignUp = 'New adviser sign up';
+  export const emailSubjectAdviserSignUpResponse =
+    'Response: Adviser Application';
   // SMS links
   export const urlNotificationsSMS: string =
     'http://localhost:7183/Notifications/send-sms';
