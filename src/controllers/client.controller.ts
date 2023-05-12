@@ -22,7 +22,7 @@ import {
 } from '@loopback/rest';
 import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
-import {Client} from '../models';
+import {Client, ClientValidationHash} from '../models';
 import {ClientRepository} from '../repositories';
 import {NotificationsService, SecurityService} from '../services';
 
@@ -231,7 +231,7 @@ export class ClientController {
 
       // Generate and send hash code to validate the mail
       let hash = this.securityService.createHash(100);
-      // client.codigoHash = hash;
+      client.hashCode = hash;
 
       // Send verification email
       let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;
@@ -253,5 +253,34 @@ export class ClientController {
       err;
     }
     return undefined;
+  }
+
+  @post('/validate-client-hash')
+  @response(200, {
+    description: 'Validated hash',
+  })
+  async validateClientHash(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(ClientValidationHash, {}),
+        },
+      },
+    })
+    hash: ClientValidationHash,
+  ): Promise<boolean> {
+    let client = await this.clientRepository.findOne({
+      where: {
+        hashCode: hash.hashCode,
+        validatedEmail: false,
+      },
+    });
+    if (client) {
+      client.validatedEmail = true;
+      this.clientRepository.replaceById(client.id, client);
+      this.securityService.createClient(client);
+      return true;
+    }
+    return false;
   }
 }

@@ -24,7 +24,7 @@ import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {
   ChangeStatusOfRequest,
-  Client,
+  ClientRequest,
   Request,
   RequestsByAdviserDate,
 } from '../models';
@@ -303,82 +303,6 @@ export class RequestController {
   }
 
   /**
-   * Get list of requests from an advisor
-   * @param adviserId
-   * @param Request
-   * @returns Advisor request list
-   */
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuRequestId, SecurityConfig.listAction],
-  })
-  @get('/request-by-adviser-requestStatus')
-  @response(200, {
-    description: 'Array of advisor request model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(Request, {includeRelations: true}),
-        },
-      },
-    },
-  })
-  async findByAdviserRequestStatus(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Request),
-        },
-      },
-    })
-    data: Request,
-  ): Promise<Request[]> {
-    // Returns the requests that match the advisor id and the request status id
-    return this.requestRepository.find({
-      where: {
-        adviserId: data.adviserId,
-        requestStatusId: data.requestStatusId,
-      },
-      include: [{relation: 'property'}],
-    });
-  }
-
-  /**
-   * Get list of requests from a client
-   * @param data
-   * @returns Client request list
-   */
-  @get('/request-by-client')
-  @response(200, {
-    description: 'Array of client request model instances',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'array',
-          items: getModelSchemaRef(Request, {includeRelations: false}),
-        },
-      },
-    },
-  })
-  async findByClientRequest(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Client),
-        },
-      },
-    })
-    data: Client,
-  ): Promise<Request[]> {
-    return this.requestRepository.find({
-      where: {
-        clientId: data.id,
-      },
-    });
-  }
-
-  /**
    * Cancel request from a client when it is in sent
    * @param Request
    * @returns Boolean
@@ -392,21 +316,21 @@ export class RequestController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Request),
+          schema: getModelSchemaRef(ClientRequest),
         },
       },
     })
-    data: Request,
+    data: ClientRequest,
   ): Promise<Boolean> {
     let request = await this.requestRepository.findOne({
       where: {
-        id: data.id,
+        id: data.requestId,
         clientId: data.clientId,
       },
     });
     if (request) {
       if (request.requestStatusId == GeneralConfig.Sent) {
-        await this.requestRepository.deleteById(data.id);
+        await this.requestRepository.deleteById(data.requestId);
         return true;
       }
     }
@@ -468,46 +392,6 @@ export class RequestController {
         await this.requestRepository.updateById(data.id, request);
         return request;
       }
-    }
-    return null;
-  }
-
-  /**
-   * Change a request to in study
-   * @param requestId
-   * @returns Request
-   */
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
-  })
-  @post('/change-in-study')
-  @response(204, {
-    description: 'Request changes to in study',
-    content: {'application/json': {schema: getModelSchemaRef(Request)}},
-  })
-  async changeInStudy(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Request),
-        },
-      },
-    })
-    data: Request,
-  ): Promise<Request | null> {
-    // The request is obtained
-    let request = await this.requestRepository.findOne({
-      where: {
-        id: data.id,
-      },
-    });
-
-    // The request exists its status is changed
-    if (request) {
-      request!.requestStatusId = GeneralConfig.InStudy;
-      await this.requestRepository.updateById(data.id, request);
-      return request;
     }
     return null;
   }

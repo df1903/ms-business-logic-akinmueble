@@ -56,4 +56,36 @@ export class SecurityService {
       return false;
     }
   }
+
+  /**
+   * Method to send notification connected with the notification microservice
+   * @param data
+   * @param url
+   * @returns Boolean
+   */
+  createClient(data: any): boolean {
+    try {
+      let info = {
+        firstName: data.firstName,
+        secondName: data.secondName,
+        firstLastname: data.firstLastname,
+        secondLastname: data.secondLastname,
+        document: data.document,
+        email: data.email,
+        phone: data.phone,
+        roleId: SecurityConfig.clientRole,
+      };
+      fetch(SecurityConfig.createUser, {
+        method: 'post',
+        body: JSON.stringify(info),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${SecurityConfig.token}`,
+        },
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }
 }

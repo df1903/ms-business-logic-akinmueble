@@ -4,8 +4,10 @@ export namespace SecurityConfig {
   export const hostMysql = process.env.HOST_STRING_MYSQL;
   export const passwordMysql = process.env.PASSWORD_MYSQL;
   export const nameDatabase = process.env.NAME_DATABASE;
+  export const token = process.env.TOKEN;
   // Roles
   export const adviserRole = '643c8b6611b852318822326a';
+  export const clientRole = '643c8b7111b852318822326b';
   // Menu id
   export const menuPropertyId = '642ce496db8a5109ec877cdb';
   export const menuRequestId = '643dd7c10349685918540d80';
