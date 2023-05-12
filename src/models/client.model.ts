@@ -50,10 +50,10 @@ export class Client extends Entity {
   })
   phone: string;
 
-  @property({
-    type: 'string',
-  })
-  codigoHash: string;
+  // @property({
+  //   type: 'string',
+  // })
+  // codigoHash: string;
 
   @property({
     type: 'boolean',

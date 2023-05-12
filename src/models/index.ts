@@ -15,3 +15,4 @@ export * from './request-status.model';
 export * from './request-type.model';
 export * from './request.model';
 export * from './requests-by-adviser-date.model';
+export * from './change-status-of-request.model';

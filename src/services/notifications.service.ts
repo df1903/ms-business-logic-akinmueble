@@ -1,6 +1,7 @@
 import {/* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {HttpErrors} from '@loopback/rest';
+import {GeneralConfig} from '../config/general.config';
 import {NotificationsConfig} from '../config/notifications.config';
 import {GeneralSystemVariablesRepository} from '../repositories';
 
@@ -92,16 +93,67 @@ export class NotificationsService {
   }
 
   /**
-   * Method to send email when a response to a request is given
+   * Method to send email when a response to a new adviser request is given
    * @param data
    */
-  emailRequestResponse(data: any) {
+  emailAdviserRequestResponse(data: any) {
     let content = `Hi ${data.firstName}  ${data.firstLastname}, <br />
     Your application to be an adviser for our company Akinmueble has been rejected`;
     let contactData = {
       destinyEmail: data.email,
       destinyName: `${data.firstName}  ${data?.firstLastname}`,
       emailSubject: NotificationsConfig.emailSubjectAdviserSignUpResponse,
+      emailBody: content,
+    };
+    this.sendNotification(
+      contactData,
+      NotificationsConfig.urlNotificationsEmail,
+    );
+  }
+
+  /**
+   * Method to send email when a response to a property request is given
+   * @param data
+   */
+  emailPropertyRequestResponse(data: any) {
+    let content;
+    let sms;
+
+    switch (data.status) {
+      case GeneralConfig.Rejected:
+        content = `Hello, ${data.name}, your request was rejected.<br /> <br /> <br />
+        Adviser Comment: ${data.comment}`;
+        sms = `Hello, ${data.name}, your request was rejected.
+        Check your email or the platform to see the advisor's comment`;
+        break;
+      case GeneralConfig.Accepted:
+        content = `Hello, ${data.name}, your request was accepted.<br />
+        To continue with the process, enter the platform to download the contract, which you must fill out and upload again.`;
+        sms = `Hello, ${data.name}, your request was accepted.
+        To continue with the process, enter the platform to download the contract, which you must fill out and upload again.`;
+        break;
+      case GeneralConfig.AcceptedWithGuarantor:
+        content = `Hello, ${data.name}, your request was accepted with guarantor.<br /> <br />
+        To continue with the process, enter the platform and enter the data of the guarantor, after this you will be enabled to download the contract, which you must fill out and upload again.`;
+        sms = `Hello, ${data.name}, your request was accepted with guarantor.
+        To continue with the process, enter the platform and enter the data of the guarantor, after this you will be enabled to download the contract, which you must fill out and upload again.`;
+        break;
+      default:
+        throw new HttpErrors[400]('Status not found');
+        break;
+    }
+    // SMS notification
+    let info = {
+      destinyPhone: data.phone,
+      smsBody: sms,
+    };
+
+    this.sendNotification(info, NotificationsConfig.urlNotificationsSMS);
+
+    let contactData = {
+      destinyEmail: data.email,
+      destinyName: data.name,
+      emailSubject: 'Request response',
       emailBody: content,
     };
     this.sendNotification(

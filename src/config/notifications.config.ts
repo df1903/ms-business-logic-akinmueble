@@ -2,7 +2,6 @@ export namespace NotificationsConfig {
   // Email subjects
   export const emailSubjectVerificateEmail = 'Confirm your Email';
   export const emailSubjectAdviserChange = 'Alert: Adviser Changed';
-  export const emailSubjectRequestResponse = 'Request response';
   export const emailSubjectNewAdviserSignUp = 'New adviser sign up';
   export const emailSubjectAdviserSignUpResponse =
     'Response: Adviser Application';

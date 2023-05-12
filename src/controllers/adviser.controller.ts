@@ -281,7 +281,7 @@ export class AdviserController {
           // The advisor's request is rejected
           adviser.accepted = false;
           // Notify advisor requester
-          this.notificationService.emailRequestResponse(adviser);
+          this.notificationService.emailAdviserRequestResponse(adviser);
         } else {
           // The advisor's request is accepted
           adviser.accepted = true;

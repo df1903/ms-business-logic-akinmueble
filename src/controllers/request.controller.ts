@@ -22,7 +22,12 @@ import {
 import {GeneralConfig} from '../config/general.config';
 import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
-import {Client, Request, RequestsByAdviserDate} from '../models';
+import {
+  ChangeStatusOfRequest,
+  Client,
+  Request,
+  RequestsByAdviserDate,
+} from '../models';
 import {
   AdviserRepository,
   ClientRepository,
@@ -516,64 +521,60 @@ export class RequestController {
    */
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
+    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
   })
-  @post('/response-request')
+  @post('/change-status-of-request')
   @response(204, {
-    description: 'Request answered',
+    description: 'Request changes to in study',
     content: {'application/json': {schema: getModelSchemaRef(Request)}},
   })
-  async responseRequest(
+  async changeStatusOfRequest(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Request),
+          schema: getModelSchemaRef(ChangeStatusOfRequest),
         },
       },
     })
-    data: Request,
+    data: ChangeStatusOfRequest,
   ): Promise<Request | null> {
-    // The request that will be answered is obtained
-    let request = await this.requestRepository.findOne({
-      where: {
-        id: data.id,
-      },
-    });
-
-    // If the request was found, it will be answered
-    if (request) {
-      // The request is updated
-      request.requestStatusId = data.requestStatusId;
-      request.comment = data.comment;
-      await this.requestRepository.updateById(data.id, request);
-
-      let client = await this.clientRepository.findOne({
+    try {
+      // The request is obtained
+      let request = await this.requestRepository.findOne({
         where: {
-          id: request.clientId,
+          id: data.requestId,
         },
       });
 
-      let status = await this.requestStatusRepository.findOne({
-        where: {
-          id: request.requestStatusId,
-        },
-      });
+      // The request exists its status is changed
+      if (request) {
+        if (data.status != GeneralConfig.InStudy && GeneralConfig.Sent) {
+          // The  client is obtained
+          let client = await this.clientRepository.findOne({
+            where: {
+              id: request.clientId,
+            },
+          });
+          // notify client
+          let info = {
+            name: `${client?.firstName}  ${client?.firstLastname}`,
+            comment: data.comment,
+            status: data.status,
+            email: client?.email,
+            phone: client?.phone,
+          };
+          this.notificationService.emailPropertyRequestResponse(info);
+        }
 
-      // Notify response to the request
-      let info = {
-        client: client,
-        status: status,
-        comment: data.comment,
-      };
+        // Change request status
+        request.requestStatusId = data.status;
 
-      this.notificationService.emailRequestResponse(info);
+        // Update status
+        await this.requestRepository.updateById(data.requestId, request);
 
-      // Contrato
-      return request;
-    }
+        return request;
+      }
+    } catch {}
     return null;
   }
-
-  //crear codeodor
-  //crear contrato
 }

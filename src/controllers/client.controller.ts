@@ -231,7 +231,7 @@ export class ClientController {
 
       // Generate and send hash code to validate the mail
       let hash = this.securityService.createHash(100);
-      client.codigoHash = hash;
+      // client.codigoHash = hash;
 
       // Send verification email
       let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;
