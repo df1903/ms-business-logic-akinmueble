@@ -204,14 +204,14 @@ export class AdviserController {
   /**
    * Adviser sign up
    * @param adviser
-   * @returns advisor created or null Email already registered
+   * @returns adviser created or null Email already registered
    */
-  @post('/advisor-sign-up')
+  @post('/adviser-sign-up')
   @response(200, {
     description: 'Adviser model instance',
     content: {'application/json': {schema: getModelSchemaRef(Adviser)}},
   })
-  async advisorSignUp(
+  async adviserSignUp(
     @requestBody({
       content: {
         'application/json': {
@@ -278,17 +278,17 @@ export class AdviserController {
       });
       if (adviser) {
         if (!response.accepted) {
-          // The advisor's request is rejected
+          // The adviser's request is rejected
           adviser.accepted = false;
-          // Notify advisor requester
+          // Notify adviser requester
           this.notificationService.emailAdviserRequestResponse(adviser);
         } else {
-          // The advisor's request is accepted
+          // The adviser's request is accepted
           adviser.accepted = true;
           // Create the logical user with credentials
           let token = parseBearerToken(this.req);
           if (token) {
-            this.securityService.createAdvisor(adviser, token);
+            this.securityService.createadviser(adviser, token);
           }
         }
         this.adviserRepository.updateById(response.adviserId, adviser);

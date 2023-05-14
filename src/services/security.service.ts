@@ -31,7 +31,7 @@ export class SecurityService {
    * @param url
    * @returns Boolean
    */
-  createAdvisor(data: any, token: string): boolean {
+  createadviser(data: any, token: string): boolean {
     try {
       let info = {
         firstName: data.firstName,
