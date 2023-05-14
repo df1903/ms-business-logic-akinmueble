@@ -1,19 +1,20 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+import {SecurityConfig} from '../config/security.config';
 
 const config = {
   name: 'mysql',
   connector: 'mysql',
   url: '',
-  host: 'localhost',
-  user: 'root',
-  password: '12345678',
-  database: 'akinmuebledb',
-  // host: SecurityConfig.hostMysql,
-  // port: 3306,
-  // user: 'admin',
-  // password: SecurityConfig.passwordMysql,
-  // database: SecurityConfig.nameDatabase,
+  // host: 'localhost',
+  // user: 'root',
+  // password: '12345678',
+  // database: 'akinmuebledb',
+  host: SecurityConfig.hostMysql,
+  port: 3306,
+  user: 'admin',
+  password: SecurityConfig.passwordMysql,
+  database: SecurityConfig.nameDatabase,
 };
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
