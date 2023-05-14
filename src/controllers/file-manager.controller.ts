@@ -61,6 +61,44 @@ export class FileManagerController {
     return res;
   }
 
+  @post('/upload-contract-file', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'File to upload',
+      },
+    },
+  })
+  async UploadContarctFile(
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @requestBody.file() request: Request,
+  ): Promise<object | false> {
+    const filePath = path.join(__dirname, GeneralConfig.contractsFilesFolder);
+    console.log(filePath);
+
+    const res = await this.storeFileToPath(
+      filePath,
+      GeneralConfig.propertyField,
+      request,
+      response,
+      GeneralConfig.documentsExtensions,
+    );
+    if (res) {
+      const filename = response.req?.file?.filename;
+      if (filename) {
+        return {file: filename};
+        // return {route: `files/contracts/${filename}`};
+      }
+    }
+    return res;
+  }
+
   /**
    * Return a config for multer storage
    * @param Path

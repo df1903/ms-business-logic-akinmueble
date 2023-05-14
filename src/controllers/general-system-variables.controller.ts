@@ -17,7 +17,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {GeneralSystemVariables} from '../models';
+import {ChangeContact, GeneralSystemVariables} from '../models';
 import {GeneralSystemVariablesRepository} from '../repositories';
 
 export class GeneralSystemVariablesController {
@@ -62,11 +62,11 @@ export class GeneralSystemVariablesController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(GeneralSystemVariables),
+          schema: getModelSchemaRef(ChangeContact),
         },
       },
     })
-    data: GeneralSystemVariables,
+    data: ChangeContact,
   ): Promise<void | null> {
     let variables = await this.generalSystemVariablesRepository.findOne({
       where: {
@@ -74,10 +74,10 @@ export class GeneralSystemVariablesController {
       },
     });
     if (variables) {
-      variables.administratorEmail = data.administratorEmail;
-      variables.administratorName = data.administratorName;
+      variables.administratorEmail = data.email;
+      variables.administratorName = data.name;
       let change = await this.generalSystemVariablesRepository.updateById(
-        data.id,
+        variables.id,
         variables,
       );
       return change;

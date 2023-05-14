@@ -23,6 +23,7 @@ import {GeneralConfig} from '../config/general.config';
 import {NotificationsConfig} from '../config/notifications.config';
 import {SecurityConfig} from '../config/security.config';
 import {
+  AssignToRequest,
   ChangeStatusOfRequest,
   ClientRequest,
   Request,
@@ -31,6 +32,8 @@ import {
 import {
   AdviserRepository,
   ClientRepository,
+  ContractRepository,
+  GuarantorRepository,
   PropertyRepository,
   RequestRepository,
   RequestStatusRepository,
@@ -52,6 +55,10 @@ export class RequestController {
     public clientRepository: ClientRepository,
     @repository(RequestStatusRepository)
     public requestStatusRepository: RequestTypeRepository,
+    @repository(GuarantorRepository)
+    public guarantorRepository: GuarantorRepository,
+    @repository(ContractRepository)
+    public contractRepository: ContractRepository,
     @service(NotificationsService)
     public notificationService: NotificationsService,
   ) {}
@@ -460,5 +467,127 @@ export class RequestController {
       }
     } catch {}
     return null;
+  }
+
+  // Assign guarantor
+  @post('/assign-guarantor')
+  @response(204, {
+    description: 'Assign guarantor to a request',
+  })
+  async assignGuarantor(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(AssignToRequest),
+        },
+      },
+    })
+    data: AssignToRequest,
+  ): Promise<boolean> {
+    let guarantor = await this.guarantorRepository.findOne({
+      where: {
+        id: data.id,
+      },
+    });
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.requestId,
+      },
+    });
+    if (guarantor && request) {
+      request.guarantorId = data.id;
+      request.requestStatusId = GeneralConfig.Accepted;
+      this.requestRepository.replaceById(data.requestId, request);
+      return true;
+    }
+    return false;
+  }
+
+  // assing contract
+  // Assign guarantor
+  @post('/assign-contract')
+  @response(204, {
+    description: 'Assign contract to a request',
+  })
+  async assignContract(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(AssignToRequest),
+        },
+      },
+    })
+    data: AssignToRequest,
+  ): Promise<boolean> {
+    let contract = await this.contractRepository.findOne({
+      where: {
+        id: data.id,
+      },
+    });
+    let request = await this.requestRepository.findOne({
+      where: {
+        id: data.requestId,
+      },
+    });
+    if (contract && request) {
+      request.contractId = data.id;
+
+      this.requestRepository.replaceById(data.requestId, request);
+
+      // Gets the other requests that the property has
+      let requests = await this.requestRepository.find({
+        where: {
+          or: [
+            {propertyId: request.propertyId, requestStatusId: 1},
+            {propertyId: request.propertyId, requestStatusId: 2},
+          ],
+        },
+      });
+
+      // Other requests that the property has are rejected
+      this.propertyRepository.requests(request.propertyId).patch(
+        {
+          comment:
+            'Your request was rejected because one was already accepted previously. We invite you to look at one that interests you.',
+          requestStatusId: 3,
+        },
+        {
+          or: [
+            {
+              requestStatusId: 1,
+            },
+            {
+              requestStatusId: 2,
+            },
+          ],
+        },
+      );
+
+      // Other clients are notified that their request was rejected
+      let info = {
+        name: '',
+        comment:
+          'Your request was rejected because one was already accepted previously. We invite you to look at one that interests you.',
+        status: GeneralConfig.Rejected,
+        email: '',
+        phone: '',
+      };
+      for (const req of requests) {
+        let client = await this.clientRepository.findOne({
+          where: {
+            id: req.clientId,
+          },
+        });
+        if (client) {
+          info.name = `${client?.firstName}  ${client?.firstLastname}`;
+          info.email = client?.email;
+          (info.phone = client?.phone),
+            this.notificationService.emailPropertyRequestResponse(info);
+        }
+      }
+
+      return true;
+    }
+    return false;
   }
 }
