@@ -106,8 +106,14 @@ export class PropertyController {
   })
   async findClient(
     @param.filter(Property) filter?: Filter<Property>,
-  ): Promise<Property[]> {
-    return this.propertyRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.propertyRepository.count()).count;
+    let records = await this.propertyRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

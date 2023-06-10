@@ -86,8 +86,14 @@ export class PropertyTypeController {
   })
   async find(
     @param.filter(PropertyType) filter?: Filter<PropertyType>,
-  ): Promise<PropertyType[]> {
-    return this.propertyTypeRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.propertyTypeRepository.count()).count;
+    let records = await this.propertyTypeRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

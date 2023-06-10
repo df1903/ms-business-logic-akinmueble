@@ -86,8 +86,14 @@ export class DepartmentController {
   })
   async find(
     @param.filter(Department) filter?: Filter<Department>,
-  ): Promise<Department[]> {
-    return this.departmentRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.departmentRepository.count()).count;
+    let records = await this.departmentRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

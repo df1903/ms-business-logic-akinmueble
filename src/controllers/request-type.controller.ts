@@ -86,8 +86,14 @@ export class RequestTypeController {
   })
   async find(
     @param.filter(RequestType) filter?: Filter<RequestType>,
-  ): Promise<RequestType[]> {
-    return this.requestTypeRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.requestTypeRepository.count()).count;
+    let records = await this.requestTypeRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

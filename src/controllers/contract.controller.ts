@@ -84,8 +84,14 @@ export class ContractController {
   })
   async find(
     @param.filter(Contract) filter?: Filter<Contract>,
-  ): Promise<Contract[]> {
-    return this.contractRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.contractRepository.count()).count;
+    let records = await this.contractRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

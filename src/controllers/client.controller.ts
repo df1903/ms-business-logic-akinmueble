@@ -90,8 +90,14 @@ export class ClientController {
       },
     },
   })
-  async find(@param.filter(Client) filter?: Filter<Client>): Promise<Client[]> {
-    return this.clientRepository.find(filter);
+  async find(@param.filter(Client) filter?: Filter<Client>): Promise<Object> {
+    let total = (await this.clientRepository.count()).count;
+    let records = await this.clientRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

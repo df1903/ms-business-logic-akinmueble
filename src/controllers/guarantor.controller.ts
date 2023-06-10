@@ -86,8 +86,14 @@ export class GuarantorController {
   })
   async find(
     @param.filter(Guarantor) filter?: Filter<Guarantor>,
-  ): Promise<Guarantor[]> {
-    return this.guarantorRepository.find(filter);
+  ): Promise<Object> {
+    let total = (await this.guarantorRepository.count()).count;
+    let records = await this.guarantorRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

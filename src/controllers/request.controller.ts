@@ -163,10 +163,14 @@ export class RequestController {
       },
     },
   })
-  async find(
-    @param.filter(Request) filter?: Filter<Request>,
-  ): Promise<Request[]> {
-    return this.requestRepository.find(filter);
+  async find(@param.filter(Request) filter?: Filter<Request>): Promise<Object> {
+    let total = (await this.requestRepository.count()).count;
+    let records = await this.requestRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

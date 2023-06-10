@@ -82,8 +82,14 @@ export class CityController {
       },
     },
   })
-  async find(@param.filter(City) filter?: Filter<City>): Promise<City[]> {
-    return this.cityRepository.find(filter);
+  async find(@param.filter(City) filter?: Filter<City>): Promise<Object> {
+    let total = (await this.cityRepository.count()).count;
+    let records = await this.cityRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

@@ -98,10 +98,14 @@ export class AdviserController {
       },
     },
   })
-  async find(
-    @param.filter(Adviser) filter?: Filter<Adviser>,
-  ): Promise<Adviser[]> {
-    return this.adviserRepository.find(filter);
+  async find(@param.filter(Adviser) filter?: Filter<Adviser>): Promise<Object> {
+    let total = (await this.adviserRepository.count()).count;
+    let records = await this.adviserRepository.find(filter);
+    let res = {
+      records: records,
+      total: total,
+    };
+    return res;
   }
 
   @authenticate({

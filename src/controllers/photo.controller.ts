@@ -66,10 +66,6 @@ export class PhotoController {
     return this.photoRepository.count(where);
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuPhotoId, SecurityConfig.listAction],
-  })
   @get('/photo')
   @response(200, {
     description: 'Array of Photo model instances',
