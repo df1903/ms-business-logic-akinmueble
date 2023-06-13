@@ -10,7 +10,7 @@ export namespace NotificationsConfig {
     'http://localhost:7183/Notifications/send-sms';
   // Email links
   export const urlFrontHashVerification: string =
-    'http://localhost:4200/hash-verification';
+    'http://localhost:4200/security/hash-verification';
   export const urlNotifications2FA: string =
     'http://localhost:7183/Notifications/send-code-2fa';
   export const urlNotificationsEmail: string =

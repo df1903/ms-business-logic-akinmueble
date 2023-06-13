@@ -33,6 +33,7 @@ export class SecurityService {
    */
   createadviser(data: any, token: string): boolean {
     try {
+      console.log(data.adviserId);
       let info = {
         firstName: data.firstName,
         secondName: data.secondName,
@@ -42,7 +43,9 @@ export class SecurityService {
         email: data.email,
         phone: data.phone,
         roleId: SecurityConfig.adviserRole,
+        accountId: data.id,
       };
+      console.log(info);
       fetch(SecurityConfig.createUser, {
         method: 'post',
         body: JSON.stringify(info),
@@ -74,7 +77,9 @@ export class SecurityService {
         email: data.email,
         phone: data.phone,
         roleId: SecurityConfig.clientRole,
+        accountId: data.id,
       };
+      console.log(info);
       fetch(SecurityConfig.createUser, {
         method: 'post',
         body: JSON.stringify(info),

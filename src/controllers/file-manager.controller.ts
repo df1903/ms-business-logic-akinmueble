@@ -45,6 +45,7 @@ export class FileManagerController {
     @requestBody.file() request: Request,
   ): Promise<object | false> {
     const filePath = path.join(__dirname, GeneralConfig.propertiesFilesFolder);
+    console.log(filePath);
     const res = await this.storeFileToPath(
       filePath,
       GeneralConfig.propertyField,
@@ -196,10 +197,6 @@ export class FileManagerController {
     return files;
   }
 
-  @authenticate({
-    strategy: 'auth',
-    options: [SecurityConfig.menuFileManagerId, SecurityConfig.downloadAction],
-  })
   @get('/GetFiles/{type}/{name}')
   @oas.response.file()
   async downloadFileByName(

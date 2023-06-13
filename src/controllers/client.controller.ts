@@ -240,7 +240,7 @@ export class ClientController {
       client.hashCode = hash;
 
       // Send verification email
-      let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/security/${hash}" target="_blank"> VALIDATE </a>`;
+      let link = `<a href="${NotificationsConfig.urlFrontHashVerification}/${hash}" target="_blank"> VALIDATE </a>`;
       let data = {
         destinyEmail: client.email,
         destinyName: `${client.firstName} ${client.firstLastname}`,
