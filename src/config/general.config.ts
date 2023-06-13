@@ -15,4 +15,5 @@ export namespace GeneralConfig {
   export const Rejected: number = 3;
   export const AcceptedWithGuarantor: number = 4;
   export const Accepted: number = 5;
+  export const Cancelled: number = 6;
 }

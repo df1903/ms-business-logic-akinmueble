@@ -416,7 +416,7 @@ export class RequestController {
    */
   @authenticate({
     strategy: 'auth',
-    options: [SecurityConfig.menuRequestId, SecurityConfig.editAction],
+    options: [SecurityConfig.menuRequestId, SecurityConfig.createAction],
   })
   @post('/change-status-of-request')
   @response(204, {
@@ -443,7 +443,11 @@ export class RequestController {
 
       // The request exists its status is changed
       if (request) {
-        if (data.status != GeneralConfig.InStudy && GeneralConfig.Sent) {
+        if (
+          data.status != GeneralConfig.InStudy &&
+          data.status != GeneralConfig.Sent &&
+          data.status != GeneralConfig.Cancelled
+        ) {
           // The  client is obtained
           let client = await this.clientRepository.findOne({
             where: {
