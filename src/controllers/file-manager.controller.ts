@@ -222,10 +222,8 @@ export class FileManagerController {
       case 1:
         filePath = path.join(__dirname, GeneralConfig.propertiesFilesFolder);
         break;
-      // case 2:
-      //   filePath = path.join(__dirname, GeneralConfig.clientsFilesFolder);
-      //   break;
       case 2:
+        filePath = path.join(__dirname, GeneralConfig.contractsFilesFolder);
         break;
     }
     return filePath;

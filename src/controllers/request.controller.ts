@@ -468,6 +468,13 @@ export class RequestController {
         // Change request status
         request.requestStatusId = data.status;
 
+        if (
+          request.requestStatusId == GeneralConfig.Accepted ||
+          request.requestStatusId == GeneralConfig.AcceptedWithGuarantor
+        ) {
+          request.contractId = 1;
+        }
+
         // Update status
         await this.requestRepository.updateById(data.requestId, request);
 
